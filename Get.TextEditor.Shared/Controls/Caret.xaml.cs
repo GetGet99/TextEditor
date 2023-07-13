@@ -105,8 +105,11 @@ public sealed partial class Caret : INotifyPropertyChanged
     partial void OnDocumentViewChanged(DocumentView oldValue, DocumentView newValue)
     {
         newValue.Selection.RangeChanged += Update;
+        newValue.RedrawRequested += Update;
         newValue.OwnerDocument.Layout.Updated += Update;
         newValue.YScrollChanged += ScrollChanged;
+        Update();
+        ScrollChanged();
     }
     DispatcherTimer scrollTimer = new() { Interval = TimeSpan.FromMilliseconds(300) };
     [Event<EventHandler>]
@@ -117,6 +120,7 @@ public sealed partial class Caret : INotifyPropertyChanged
 
         scrollTimer.Start();
     }
+    [Event<Action<DocumentView>>]
     [Event<EventHandler>]
     void Update()
     {

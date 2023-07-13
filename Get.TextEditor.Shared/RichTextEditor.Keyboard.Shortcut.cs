@@ -58,7 +58,13 @@ partial class RichTextEditor : UserControl
                             """, style);
                         DocumentView.Controller.InsertNewParagraph(para);
                     }
-                    TestHorizontalParagraph();
+                    void TestTyping()
+                    {
+                        DocumentView.Controller.Type("A");
+                        DocumentView.Controller.Type(Document.NewParagraphSeparator.ToString());
+                        DocumentView.Controller.Type("A");
+                    }
+                    TestTyping();
                 }
                 else goto default;
                 break;

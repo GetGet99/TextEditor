@@ -2,10 +2,17 @@ using Windows.UI.ViewManagement;
 using SkiaSharp.Views.UWP;
 using Windows.UI.Xaml.Controls;
 using Get.RichTextKit.Editor.DocumentView;
+using Get.RichTextKit.Styles;
+using Get.RichTextKit;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
 {
+    static readonly IStyle DefaultStyle = new Style()
+    {
+        FontFamily = "Segoe UI",
+        FontSize = 32
+    };
     public readonly DocumentView DocumentView;
     void InitTextDocument()
     {
@@ -21,9 +28,5 @@ partial class RichTextEditor : UserControl
         Constants.UISettings.ColorValuesChanged += (_, _) => SetSelectionColor();
         SetSelectionColor();
         DocumentView.OwnerDocument.Layout.LineWrap = true;
-
-        var all = DocumentView.OwnerDocument[DocumentView.OwnerDocument.GetSelectionRange(default, Get.RichTextKit.Editor.SelectionKind.Document)];
-        all.FontFamily = "Segoe UI";
-        all.FontSize = 32;
     }
 }

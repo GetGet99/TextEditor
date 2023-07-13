@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Editor;
+using Get.RichTextKit;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
@@ -47,6 +48,13 @@ partial class RichTextEditor : UserControl
                     DocumentView.Controller.Type("\n");
                 else
                     DocumentView.Controller.Type(Document.NewParagraphSeparator.ToString()); // Paragraph separator
+                //var selection = DocumentView.Selection.Range;
+                //var caretPos = selection.CaretPosition;
+                //EditContext.NotifyTextChanged(
+                //    modifiedRange: new TextRange(caretPos.CodePointIndex - 1, caretPos.CodePointIndex).ToCore(),
+                //    newLength: DocumentView.OwnerDocument.Layout.Length,
+                //    selection.ToCore()
+                //);
                 break;
             case VirtualKey.Home:
             case VirtualKey.End:
