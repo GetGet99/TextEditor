@@ -1,0 +1,5 @@
+[submodule "RichTextKit"]
+	path = RichTextKit
+	url = https://github.com/Get0457/RichTextKit/tree/main
+	branch = main
+	

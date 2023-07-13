@@ -1,0 +1,52 @@
+﻿<Grid
+    x:Class="Get.TextEditor.Caret"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Translation="{x:Bind MainTranslation(CaretRect), Mode=OneWay}"
+    Visibility="Collapsed"
+>
+    <Grid
+        Scale="{x:Bind Vector(1, CaretRect.Height), Mode=OneWay}"
+        Opacity="{x:Bind GetOpacity(CaretDisplayMode), Mode=OneWay}"
+        Width="1" Height="1"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Top"
+        Background="{ThemeResource DefaultTextForegroundThemeBrush}"
+        IsHitTestVisible="False"
+    >
+        <Grid.ScaleTransition>
+            <Vector3Transition Duration="0:0:0.1"/>
+        </Grid.ScaleTransition>
+    </Grid>
+    <Grid IsHitTestVisible="{x:Bind SelectionHandle, Mode=OneWay}" Translation="{x:Bind Vector(0, CaretRect.Height), Mode=OneWay}" Width="30" Height="30" Background="Transparent" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="HandleManipulationStarted" ManipulationDelta="HandleManipulationDelta" ManipulationCompleted="HandleManipulationCompleted" PointerPressed="CancelPointerEvent" PointerMoved="CancelPointerEvent" PointerReleased="CancelPointerEvent2">
+        <Ellipse
+            Visibility="{x:Bind SelectionHandle, Mode=OneWay}"
+            Fill="{ThemeResource DefaultTextForegroundThemeBrush}"
+            StrokeThickness="2"
+            Stroke="{ThemeResource SystemColorControlAccentBrush}"
+            Width="12" Height="12"
+            VerticalAlignment="Top" HorizontalAlignment="Center"
+            ManipulationMode="TranslateX,TranslateY"
+            ManipulationStarted="HandleManipulationStarted"
+            ManipulationDelta="HandleManipulationDelta"
+            ManipulationCompleted="HandleManipulationCompleted"
+            PointerEntered="GridPoitnerEnter" PointerExited="GridPoitnerLeave"
+            PointerPressed="CancelPointerEvent" PointerMoved="CancelPointerEvent"
+            PointerReleased="CancelPointerEvent2"
+        >
+
+        </Ellipse>
+        <Grid.TranslationTransition>
+            <Vector3Transition Duration="0:0:0.1"/>
+        </Grid.TranslationTransition>
+    </Grid>
+    <Grid.TranslationTransition>
+        <Vector3Transition x:Name="TranslateTransitionCache" Duration="0:0:0.1"/>
+    </Grid.TranslationTransition>
+    <Grid.RotationTransition>
+        <ScalarTransition Duration="0:0:0.1"/>
+    </Grid.RotationTransition>
+</Grid>

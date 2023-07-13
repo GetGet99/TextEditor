@@ -1,0 +1,6 @@
+*/bin
+*/obj
+.vs
+.vscode
+# Not ready yet
+Get.TextEditor.Test.WinUI

@@ -1,0 +1,13 @@
+﻿<skiaview:SKSwapChainPanel
+    x:Class="Get.TextEditor.RichTextEditorCanvas"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Get.TextEditor"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:skiaview="using:SkiaSharp.Views.UWP"
+    mc:Ignorable="d"
+>
+    <local:Caret DocumentView="{x:Bind DocumentView, Mode=OneWay}" SelectionHandle="{x:Bind SelectionHandle, Mode=OneWay}" CaretDisplayMode="Primary" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    <local:Caret DocumentView="{x:Bind DocumentView, Mode=OneWay}" SelectionHandle="{x:Bind SelectionHandle, Mode=OneWay}" CaretDisplayMode="Secondary" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+</skiaview:SKSwapChainPanel>

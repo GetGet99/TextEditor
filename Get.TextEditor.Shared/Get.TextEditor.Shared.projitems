@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8b2d57fd-a230-4794-a39f-4e4e32981801</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Get.TextEditor.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\Caret.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\RichTextEditorCanvas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\RichTextEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)XAMLParagraph\ImageDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Caret.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.DocumentViewOwner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\ImageDisplay.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\ImageParagraph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.PointerBackend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.Keyboard.Shortcut.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.Clipboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\RichTextEditorUICanvas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.EditorCore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.Keyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.Pointer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.TextDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\RichTextEditor.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\FrameworkElementParagraph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIElementRun.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\RichTextEditorCanvas.xaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Controls\" />
+  </ItemGroup>
+</Project>
