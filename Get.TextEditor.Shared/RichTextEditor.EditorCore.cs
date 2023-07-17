@@ -2,7 +2,6 @@ using Windows.UI.Text.Core;
 using Get.RichTextKit;
 using Windows.System;
 using Windows.UI.Xaml.Controls;
-using Get.RichTextKit.Editor;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
@@ -48,7 +47,7 @@ partial class RichTextEditor : UserControl
         EditContext.TextRequested += (sender, args) =>
         {
             var requestPart = new TextRange(args.Request.Range.StartCaretPosition, args.Request.Range.EndCaretPosition);
-            args.Request.Text = DocumentView.OwnerDocument.GetText(requestPart).Replace(Document.NewParagraphSeparator, '\n').ToString();
+            args.Request.Text = DocumentView.OwnerDocument.GetText(requestPart).ToString();
         };
         EditContext.SelectionRequested += (sender, args) =>
         {
@@ -56,8 +55,8 @@ partial class RichTextEditor : UserControl
         };
         EditContext.LayoutRequested += (sender, args) =>
         {
-            var selection = DocumentView.Selection.Range;
-            //args.Request.LayoutBoundsVisualPixels.ControlBounds = new(0, 0, ActualWidth, ActualHeight);
+            //var selection = DocumentView.Selection.Range;
+            //args.Request.LayoutBoundsVisualPixels.ControlBounds = TransformToVisual(null).TransformBounds(new(0, 0, ActualWidth, ActualHeight));
             //args.Request.LayoutBoundsVisualPixels.TextBounds = TextDocument.boun;
         };
         GotFocus += delegate

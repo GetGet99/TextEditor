@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text;
 using static RtfParser.CoreRTFParser;
 
 namespace RtfParser;
@@ -36,7 +37,7 @@ public class EmptyRTFParserHandler : IRTFParserHandler
 
     public void AddText(ReadOnlyMemory<int> text)
     {
-        
+
     }
 
     public void EnterGroup(RTFGroup group)
@@ -52,7 +53,7 @@ public class EmptyRTFParserHandler : IRTFParserHandler
 
     public void ExitGroup(RTFGroup group)
     {
-        
+
     }
 }
 public interface IRTFParserHandler
@@ -111,7 +112,7 @@ public class CoreRTFParser
 
             return false;
         }
-        
+
         /// <summary>Gets the current position of the enumerator.</summary>
         public int CurrentPosition
         {
@@ -130,10 +131,12 @@ public class CoreRTFParser
 
         public readonly bool IsValid => _index < Span.Length;
     }
+    static readonly Encoding CodePage1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252);
     public static void Parse(ReadOnlySpan<char> charss, IRTFParserHandler inHandler)
     {
         var chars = new ReadOnlySpanIndexEnumerator<char>(charss);
         Stack<RTFGroup> Groups = new();
+        bool uc1 = false;
         Groups.Push(new());
         int? i = null;
         IRTFParserHandler Handler()
@@ -145,7 +148,7 @@ public class CoreRTFParser
             }
             return inHandler;
         }
-        
+
         if (!chars.MoveNext()) return;
 
         void Cleanup(ref ReadOnlySpanIndexEnumerator<char> chars)
@@ -180,17 +183,22 @@ public class CoreRTFParser
                             if (ReadNChars(ref chars, 2, out var code))
                             {
                                 byte b = byte.Parse(code.ToString(), NumberStyles.HexNumber);
-                                Handler().AddText(new int[] { b });
+                                Handler().AddText(new int[] { CodePage1252.GetChars(new byte[] { b })[0] });
                             }
+                            break;
+                        case '{' or '}' or '\\':
+                            // Escaped {, }, \
+                            Handler().AddText(new int[] { chars.Current });
+                            if (!chars.MoveNext()) goto EndLoop;
                             break;
                         case '~':
                             // Nonbreaking Space
-                            Handler().AddText(new int[] { ' ' });
+                            Handler().AddText(new int[] { (char)160 });
                             if (!chars.MoveNext()) goto EndLoop;
                             break;
                         case '_':
                             // Nonbreaking Hyphen
-                            Handler().AddText(new int[] { '-' });
+                            Handler().AddText(new int[] { (char)2011 });
                             if (!chars.MoveNext()) goto EndLoop;
                             break;
                         case '-':
@@ -211,6 +219,16 @@ public class CoreRTFParser
                                 int? param = null;
                                 if (chars.IsValid && GetContinuousNumber(ref chars, out var _p)) { param = _p; }
 
+                                if (command is "uc" && param is 1)
+                                {
+                                    uc1 = true;
+                                    goto EndCommand;
+                                }
+                                else if (uc1 && command is not "u")
+                                {
+                                    uc1 = false;
+                                    goto EndCommand;
+                                }
                                 var group = Groups.Peek();
 
                                 var cmd = new RTFCommandContext()
@@ -221,8 +239,14 @@ public class CoreRTFParser
                                 };
                                 group.InternalShouldExecuteEntireGroup = false;
                                 var isEmpty = group.InternalIsEmpty;
-
-                                Handler().ExecuteCommand(ref cmd, param, group);
+                                if (uc1 && param.HasValue && command is "u")
+                                {
+                                    Handler().AddText(new int[] { (char)param.Value });
+                                    uc1 = false;
+                                    if (chars.IsValid && chars.Current is '*')
+                                        if (!chars.MoveNext()) goto EndLoop;
+                                } else
+                                    Handler().ExecuteCommand(ref cmd, param, group);
                                 if (cmd.ShouldBeGroupCommand)
                                 {
                                     if (!isEmpty) throw new InvalidOperationException();
@@ -231,6 +255,7 @@ public class CoreRTFParser
                                     group.Handler.ExecuteCommand(ref cmd, param, group);
                                 }
                             }
+                        EndCommand:
                             // ignore the space after command
                             if (chars.IsValid && chars.Current is ' ')
                                 if (!chars.MoveNext()) goto EndLoop;
@@ -311,7 +336,7 @@ public class CoreRTFParser
             i++;
         }
         for (; i < enumerator.Span.Length; i++)
-        {   
+        {
             if (!char.IsDigit(chars[i])) break;
             else
             {

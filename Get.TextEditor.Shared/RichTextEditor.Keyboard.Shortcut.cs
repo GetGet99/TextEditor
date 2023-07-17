@@ -18,6 +18,13 @@ partial class RichTextEditor : UserControl
         bool handled = true;
         switch (e.VirtualKey)
         {
+            case VirtualKey.C:
+                if (IsKeyDown(VirtualKey.Control))
+                {
+                    Copy();
+                    break;
+                }
+                else goto default;
             case VirtualKey.V:
                 if (IsKeyDown(VirtualKey.Control))
                 {

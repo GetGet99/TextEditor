@@ -4,10 +4,24 @@ using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Windows.ApplicationModel.DataTransfer;
 using System.Threading.Tasks;
+using Get.TextEditor.Data;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
 {
+    void Copy()
+    {
+        var data = DocumentDataGenerator.Generate(
+            DocumentView.OwnerDocument,
+            DocumentView.Selection.Range.Normalized,
+            new DocumentDataGeneratorHandler()
+        );
+        var package = new DataPackage();
+        package.SetRtf(data.Rtf.ToString());
+        package.SetHtmlFormat(data.HTML.ToString());
+        package.SetText(data.Text.ToString());
+        Clipboard.SetContent(package);
+    }
     async Task PasteAsync(bool forceNoFormatting)
     {
         using (DocumentView.OwnerDocument.UndoManager.OpenGroup("Paste"))
@@ -21,14 +35,15 @@ partial class RichTextEditor : UserControl
 
             if (clipboard.Contains(StandardDataFormats.Rtf))
             {
-                var handler = new RTF.RTFDocumentHandler(DocumentView)
+                var handler = new RTF.RTFDocumentHandler(DocumentView, new()
                 {
-                    AllowBold = false,
+                    AllowBold = true,
                     AllowItalic = true,
-                    AllowUnderline = false,
+                    AllowUnderline = true,
                     AllowSubScript = true,
-                    AllowSuperScript = true
-                };
+                    AllowSuperScript = true,
+                    AllowStrikethrough = true
+                });
                 RtfParser.CoreRTFParser.Parse((await clipboard.GetRtfAsync()).AsSpan(), handler);
                 return;
             }

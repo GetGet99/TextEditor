@@ -4,26 +4,18 @@ using RtfParser;
 using System.Drawing;
 
 namespace Get.TextEditor.RTF;
-
 public class RTFDocumentHandler : IRTFParserHandler
 {
     int? DefaultFontIndex;
-    public bool AllowFontColorChange { get; set; }
-    public bool AllowFontSizeChange { get; set; }
-    public bool AllowFontFamilyChange { get; set; }
-    public bool AllowBold { get; set; }
-    public bool AllowItalic { get; set; }
-    public bool AllowUnderline { get; set; }
-    public bool AllowSuperScript { get; set; }
-    public bool AllowSubScript { get; set; }
-    public bool AllowStrikethrough { get; set; }
+    ImportFormatting ImportFormatting;
     internal FontTableParser FontTable = new();
     internal ColorTableParser ColorTable = new();
     internal StylesheetParser StylesheetParser = new();
     DocumentView DocumentView;
-    public RTFDocumentHandler(DocumentView document)
+    public RTFDocumentHandler(DocumentView document, ImportFormatting importFormatting)
     {
         DocumentView = document;
+        ImportFormatting = importFormatting;
     }
     public void AddText(ReadOnlyMemory<int> text)
     {
@@ -79,7 +71,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 {
                     if (FontTable.TryGetValue(DefaultFontIndex.Value, out var font))
                         ApplyComplexStyle(
-                            AllowFontFamilyChange,
+                            ImportFormatting.AllowFontFamilyChange,
                             () => DocumentView.Selection.FontFamily,
                             x => DocumentView.Selection.FontFamily = x,
                             font
@@ -88,41 +80,41 @@ public class RTFDocumentHandler : IRTFParserHandler
                 break;
             case "i":
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowItalic, x => DocumentView.Selection.Italic = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowItalic, x => DocumentView.Selection.Italic = x);
                 else
-                    ApplySimpleStyleOn(AllowItalic, x => DocumentView.Selection.Italic = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowItalic, x => DocumentView.Selection.Italic = x);
                 break;
             case "b":
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowBold, x => DocumentView.Selection.Bold = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowBold, x => DocumentView.Selection.Bold = x);
                 else
-                    ApplySimpleStyleOn(AllowBold, x => DocumentView.Selection.Bold = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowBold, x => DocumentView.Selection.Bold = x);
                 break;
             case "ul":
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowUnderline, x => DocumentView.Selection.Underline = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
                 else
-                    ApplySimpleStyleOn(AllowUnderline, x => DocumentView.Selection.Underline = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
                 break;
             case "ulnone":
-                ApplySimpleStyleOff(AllowUnderline, x => DocumentView.Selection.Underline = x);
+                ApplySimpleStyleOff(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
                 break;
             case "super":
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
                 else
-                    ApplySimpleStyleOn(AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
                 break;
             case "sub":
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowSubScript, x => DocumentView.Selection.SubScript = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowSubScript, x => DocumentView.Selection.SubScript = x);
                 else
-                    ApplySimpleStyleOn(AllowSubScript, x => DocumentView.Selection.SubScript = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowSubScript, x => DocumentView.Selection.SubScript = x);
                 break;
             case "f":
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    AllowFontFamilyChange,
+                    ImportFormatting.AllowFontFamilyChange,
                     () => DocumentView.Selection.FontFamily,
                     x => DocumentView.Selection.FontFamily = x,
                     FontTable[param.Value]
@@ -131,7 +123,7 @@ public class RTFDocumentHandler : IRTFParserHandler
             case "fs":
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    AllowFontSizeChange,
+                    ImportFormatting.AllowFontSizeChange,
                     () => DocumentView.Selection.FontSize,
                     x => DocumentView.Selection.FontSize = x,
                     (float)param.Value / 2
@@ -140,7 +132,7 @@ public class RTFDocumentHandler : IRTFParserHandler
             case "cf":
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    AllowFontColorChange,
+                    ImportFormatting.AllowFontColorChange,
                     delegate
                     {
                         var color = DocumentView.Selection.TextColor.Value;
@@ -153,7 +145,7 @@ public class RTFDocumentHandler : IRTFParserHandler
             case "cb":
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    AllowFontColorChange,
+                    ImportFormatting.AllowFontColorChange,
                     delegate
                     {
                         var color = DocumentView.Selection.BackgroundColor!.Value;
@@ -164,42 +156,42 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "plain":
-                ResetSimpleStyle(AllowItalic,
+                ResetSimpleStyle(ImportFormatting.AllowItalic,
                     () => DocumentView.Selection.Italic,
                     x => DocumentView.Selection.Italic = x
                 );
-                ResetSimpleStyle(AllowBold,
+                ResetSimpleStyle(ImportFormatting.AllowBold,
                     () => DocumentView.Selection.Bold,
                     x => DocumentView.Selection.Bold = x
                 );
-                ResetSimpleStyle(AllowUnderline,
+                ResetSimpleStyle(ImportFormatting.AllowUnderline,
                     () => DocumentView.Selection.Underline,
                     x => DocumentView.Selection.Underline = x
                 );
-                ResetSimpleStyle(AllowSuperScript,
+                ResetSimpleStyle(ImportFormatting.AllowSuperScript,
                     () => DocumentView.Selection.SuperScript,
                     x => DocumentView.Selection.SuperScript = x
                 );
-                ResetSimpleStyle(AllowSubScript,
+                ResetSimpleStyle(ImportFormatting.AllowSubScript,
                     () => DocumentView.Selection.SubScript,
                     x => DocumentView.Selection.SubScript = x
                 );
                 if (DefaultFontIndex is not null && FontTable.TryGetValue(DefaultFontIndex.Value, out var font))
                     ApplyComplexStyle(
-                        AllowFontFamilyChange,
+                        ImportFormatting.AllowFontFamilyChange,
                         () => DocumentView.Selection.FontFamily,
                         x => DocumentView.Selection.FontFamily = x,
                         font
                     );
                 ApplyComplexStyle(
-                    AllowFontSizeChange,
+                    ImportFormatting.AllowFontSizeChange,
                     () => DocumentView.Selection.FontSize,
                     x => DocumentView.Selection.FontSize = x,
                     12f
                 );
 
                 ApplyComplexStyle(
-                    AllowFontColorChange,
+                    ImportFormatting.AllowFontColorChange,
                     delegate
                     {
                         var color = DocumentView.Selection.TextColor.Value;
@@ -218,9 +210,9 @@ public class RTFDocumentHandler : IRTFParserHandler
             case "strike":
 
                 if (param is 0)
-                    ApplySimpleStyleOff(AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
+                    ApplySimpleStyleOff(ImportFormatting.AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
                 else
-                    ApplySimpleStyleOn(AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
+                    ApplySimpleStyleOn(ImportFormatting.AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
                 break;
             // scaps
             default:
