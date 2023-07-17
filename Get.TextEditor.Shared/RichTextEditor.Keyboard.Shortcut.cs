@@ -127,7 +127,10 @@ partial class RichTextEditor : UserControl
                 break;
             case VirtualKey.Z:
                 if (IsKeyDown(VirtualKey.Control))
+                {
+                    if (IsKeyDown(VirtualKey.Shift)) goto case VirtualKey.Y;
                     DocumentView.OwnerDocument.UndoManager.Undo(DocumentView.InvokeUpdateInfo);
+                }
                 else goto default;
                 break;
             case VirtualKey.Y:
