@@ -32,8 +32,8 @@ partial class RichTextEditor : UserControl
             this,
             ele,
             DocumentView.Selection.Range.IsRange ?
-            DocumentView.OwnerDocument.GetStyleAtPosition(DocumentView.Selection.Range.Normalized.CaretPosition) :
-            DocumentView.Selection.CurrentPositionStyle
+            DocumentView.OwnerDocument.GetStyleAtPosition(DocumentView.Selection.Range.Normalized.EndCaretPosition) :
+            DocumentView.Selection.CurrentCaretStyle
         ));
     }
 }

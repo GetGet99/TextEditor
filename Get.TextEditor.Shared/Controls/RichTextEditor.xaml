@@ -9,16 +9,17 @@
 >
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="12"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="12"/>
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid Grid.Column="1">
             <local:RichTextEditorCanvas x:Name="EditorCanvas" DocumentView="{x:Bind DocumentView}"/>
             <local:RichTextEditorUICanvas x:Name="UICanvas"/>
         </Grid>
         <ScrollBar
             IndicatorMode="MouseIndicator"
-            Grid.Column="1"
+            Grid.Column="2"
             Value="{x:Bind DocumentView.YScroll, Mode=TwoWay}"
             Minimum="0"
             Maximum="{x:Bind DocumentView.MaximumYScroll, Mode=OneWay}"
