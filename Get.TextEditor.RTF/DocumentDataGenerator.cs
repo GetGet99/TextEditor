@@ -81,7 +81,7 @@ public static class DocumentDataGenerator
     }
     static void Generate(IParagraphCollection parent, TextRange selection, IDataDocumentGeneratorHandler handler, ref DataInfo info)
     {
-        foreach (var run in parent.Paragraphs.AsReadOnly().GetInterectingRuns(selection.Minimum, selection.Length))
+        foreach (var run in parent.Paragraphs.AsIReadOnlyList().GetInterectingRuns(selection.Minimum, selection.Length))
         {
             var para = parent.Paragraphs[run.Index];
             if (para is IParagraphPanel paragraphPanel)
