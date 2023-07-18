@@ -37,12 +37,12 @@ partial class RichTextEditor : UserControl
             {
                 var handler = new RTF.RTFDocumentHandler(DocumentView, new()
                 {
-                    AllowBold = true,
-                    AllowItalic = true,
-                    AllowUnderline = true,
-                    AllowSubScript = true,
-                    AllowSuperScript = true,
-                    AllowStrikethrough = true
+                    Bold = true,
+                    Italic = true,
+                    Underline = true,
+                    SubScript = true,
+                    SuperScript = true,
+                    Strikethrough = true
                 });
                 RtfParser.CoreRTFParser.Parse((await clipboard.GetRtfAsync()).AsSpan(), handler);
                 return;

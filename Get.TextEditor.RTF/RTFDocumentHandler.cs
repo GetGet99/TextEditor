@@ -7,12 +7,12 @@ namespace Get.TextEditor.RTF;
 public class RTFDocumentHandler : IRTFParserHandler
 {
     int? DefaultFontIndex;
-    ImportFormatting ImportFormatting;
+    AllowedFormatting ImportFormatting;
     internal FontTableParser FontTable = new();
     internal ColorTableParser ColorTable = new();
     internal StylesheetParser StylesheetParser = new();
     DocumentView DocumentView;
-    public RTFDocumentHandler(DocumentView document, ImportFormatting importFormatting)
+    public RTFDocumentHandler(DocumentView document, AllowedFormatting importFormatting)
     {
         DocumentView = document;
         ImportFormatting = importFormatting;
@@ -80,36 +80,36 @@ public class RTFDocumentHandler : IRTFParserHandler
                 break;
             case "i":
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowItalic, x => DocumentView.Selection.Italic = x);
+                    ApplySimpleStyleOff(ImportFormatting.Italic, x => DocumentView.Selection.Italic = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowItalic, x => DocumentView.Selection.Italic = x);
+                    ApplySimpleStyleOn(ImportFormatting.Italic, x => DocumentView.Selection.Italic = x);
                 break;
             case "b":
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowBold, x => DocumentView.Selection.Bold = x);
+                    ApplySimpleStyleOff(ImportFormatting.Bold, x => DocumentView.Selection.Bold = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowBold, x => DocumentView.Selection.Bold = x);
+                    ApplySimpleStyleOn(ImportFormatting.Bold, x => DocumentView.Selection.Bold = x);
                 break;
             case "ul":
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
+                    ApplySimpleStyleOff(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
+                    ApplySimpleStyleOn(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 break;
             case "ulnone":
-                ApplySimpleStyleOff(ImportFormatting.AllowUnderline, x => DocumentView.Selection.Underline = x);
+                ApplySimpleStyleOff(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 break;
             case "super":
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
+                    ApplySimpleStyleOff(ImportFormatting.SuperScript, x => DocumentView.Selection.SuperScript = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowSuperScript, x => DocumentView.Selection.SuperScript = x);
+                    ApplySimpleStyleOn(ImportFormatting.SuperScript, x => DocumentView.Selection.SuperScript = x);
                 break;
             case "sub":
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowSubScript, x => DocumentView.Selection.SubScript = x);
+                    ApplySimpleStyleOff(ImportFormatting.SubScript, x => DocumentView.Selection.SubScript = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowSubScript, x => DocumentView.Selection.SubScript = x);
+                    ApplySimpleStyleOn(ImportFormatting.SubScript, x => DocumentView.Selection.SubScript = x);
                 break;
             case "f":
                 if (param is null) goto default;
@@ -156,23 +156,23 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "plain":
-                ResetSimpleStyle(ImportFormatting.AllowItalic,
+                ResetSimpleStyle(ImportFormatting.Italic,
                     () => DocumentView.Selection.Italic,
                     x => DocumentView.Selection.Italic = x
                 );
-                ResetSimpleStyle(ImportFormatting.AllowBold,
+                ResetSimpleStyle(ImportFormatting.Bold,
                     () => DocumentView.Selection.Bold,
                     x => DocumentView.Selection.Bold = x
                 );
-                ResetSimpleStyle(ImportFormatting.AllowUnderline,
+                ResetSimpleStyle(ImportFormatting.Underline,
                     () => DocumentView.Selection.Underline,
                     x => DocumentView.Selection.Underline = x
                 );
-                ResetSimpleStyle(ImportFormatting.AllowSuperScript,
+                ResetSimpleStyle(ImportFormatting.SuperScript,
                     () => DocumentView.Selection.SuperScript,
                     x => DocumentView.Selection.SuperScript = x
                 );
-                ResetSimpleStyle(ImportFormatting.AllowSubScript,
+                ResetSimpleStyle(ImportFormatting.SubScript,
                     () => DocumentView.Selection.SubScript,
                     x => DocumentView.Selection.SubScript = x
                 );
@@ -210,9 +210,9 @@ public class RTFDocumentHandler : IRTFParserHandler
             case "strike":
 
                 if (param is 0)
-                    ApplySimpleStyleOff(ImportFormatting.AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
+                    ApplySimpleStyleOff(ImportFormatting.Strikethrough, x => DocumentView.Selection.Strikethrough = x);
                 else
-                    ApplySimpleStyleOn(ImportFormatting.AllowStrikethrough, x => DocumentView.Selection.Strikethrough = x);
+                    ApplySimpleStyleOn(ImportFormatting.Strikethrough, x => DocumentView.Selection.Strikethrough = x);
                 break;
             // scaps
             default:

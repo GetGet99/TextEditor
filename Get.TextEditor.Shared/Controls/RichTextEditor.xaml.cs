@@ -1,11 +1,5 @@
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Media;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.Devices.Input;
-using Get.XAMLTools;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl

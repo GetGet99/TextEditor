@@ -11,9 +11,9 @@ using Get.RichTextKit;
 using UITextBlock = Windows.UI.Xaml.Controls.TextBlock;
 
 namespace Get.TextEditor;
-partial class RichTextEditor : UserControl
+partial class RichTextEditor
 {
-
+    public AllowedFormatting AllowedShortcutFormatting { get; set; } = new(defaultValue: true);
     private void HandleShortcut(CoreWindow sender, KeyEventArgs e)
     {
         if (!HasFocus) return;
@@ -89,15 +89,15 @@ partial class RichTextEditor : UserControl
                 else goto default;
                 break;
             case VirtualKey.B:
-                if (IsKeyDown(VirtualKey.Control)) DocumentView.Selection.Bold = DocumentView.Selection.Bold.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Bold) DocumentView.Selection.Bold = DocumentView.Selection.Bold.Toggle();
                 else goto default;
                 break;
             case VirtualKey.U:
-                if (IsKeyDown(VirtualKey.Control)) DocumentView.Selection.Underline = DocumentView.Selection.Underline.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Underline) DocumentView.Selection.Underline = DocumentView.Selection.Underline.Toggle();
                 else goto default;
                 break;
             case VirtualKey.I:
-                if (IsKeyDown(VirtualKey.Control)) DocumentView.Selection.Italic = DocumentView.Selection.Italic.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Italic) DocumentView.Selection.Italic = DocumentView.Selection.Italic.Toggle();
                 else goto default;
                 break;
             case VirtualKey.L:
@@ -118,9 +118,11 @@ partial class RichTextEditor : UserControl
             case (VirtualKey)0xBB: // OEM + or = key
                 if (IsKeyDown(VirtualKey.Control))
                 {
-                    if (IsKeyDown(VirtualKey.Shift))
+                    // Intentional behavior: If Ctrl + Shift + = cannot set superscript,
+                    // then Ctrl + Shift + = can fallback to subscript
+                    if (IsKeyDown(VirtualKey.Shift) && AllowedShortcutFormatting.SuperScript)
                         DocumentView.Selection.SuperScript = DocumentView.Selection.SuperScript.Toggle();
-                    else
+                    else if (AllowedShortcutFormatting.SubScript)
                         DocumentView.Selection.SubScript = DocumentView.Selection.SubScript.Toggle();
                 }
                 else goto default;
