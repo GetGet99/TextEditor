@@ -26,7 +26,6 @@ namespace TryRichText.UWP
         public MainPage()
         {
             this.InitializeComponent();
-            RootGrid.ColumnDefinitions.RemoveAt(1);
             var editor1 = new Get.TextEditor.RichTextEditor() { AllowFocusOnInteraction = true };
             RootGrid.Children.Add(editor1);
             //var editor2 = new Get.TextEditor.RichTextEditor(editor1.DocumentView.OwnerDocument) { AllowFocusOnInteraction = true };
