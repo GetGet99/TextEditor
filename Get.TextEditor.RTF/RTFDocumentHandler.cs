@@ -1,4 +1,5 @@
 ﻿using Get.RichTextKit.Editor;
+using Get.RichTextKit.Editor.DataStructure.Table;
 using Get.RichTextKit.Editor.DocumentView;
 using RtfParser;
 using System.Drawing;
@@ -49,22 +50,27 @@ public class RTFDocumentHandler : IRTFParserHandler
         switch (commandContext.TextCommand)
         {
             case "fonttbl": // Font Table
+                CleanUp();
                 commandContext.ShouldBeGroupCommand = true;
                 commandContext.CommandGroupHandler = FontTable;
                 break;
             case "colortbl": // Color Table
+                CleanUp();
                 commandContext.ShouldBeGroupCommand = true;
                 commandContext.CommandGroupHandler = ColorTable;
                 break;
             case "stylesheet":
+                CleanUp();
                 commandContext.ShouldBeGroupCommand = true;
                 commandContext.CommandGroupHandler = StylesheetParser;
                 break;
             case "info":
+                CleanUp();
                 commandContext.ShouldBeGroupCommand = true;
                 commandContext.CommandGroupHandler = EmptyRTFParserHandler.Instance;
                 break;
             case "deff":
+                CleanUp();
                 if (param is null) goto default;
                 DefaultFontIndex = param.Value;
                 FontTable.Changed += delegate
@@ -79,39 +85,46 @@ public class RTFDocumentHandler : IRTFParserHandler
                 };
                 break;
             case "i":
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.Italic, x => DocumentView.Selection.Italic = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.Italic, x => DocumentView.Selection.Italic = x);
                 break;
             case "b":
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.Bold, x => DocumentView.Selection.Bold = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.Bold, x => DocumentView.Selection.Bold = x);
                 break;
             case "ul":
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 break;
             case "ulnone":
+                CleanUp();
                 ApplySimpleStyleOff(ImportFormatting.Underline, x => DocumentView.Selection.Underline = x);
                 break;
             case "super":
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.SuperScript, x => DocumentView.Selection.SuperScript = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.SuperScript, x => DocumentView.Selection.SuperScript = x);
                 break;
             case "sub":
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.SubScript, x => DocumentView.Selection.SubScript = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.SubScript, x => DocumentView.Selection.SubScript = x);
                 break;
             case "f":
+                CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
                     ImportFormatting.AllowFontFamilyChange,
@@ -121,6 +134,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "fs":
+                CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
                     ImportFormatting.AllowFontSizeChange,
@@ -130,6 +144,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "cf":
+                CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
                     ImportFormatting.AllowFontColorChange,
@@ -143,6 +158,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "cb":
+                CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
                     ImportFormatting.AllowFontColorChange,
@@ -156,6 +172,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "plain":
+                CleanUp();
                 ResetSimpleStyle(ImportFormatting.Italic,
                     () => DocumentView.Selection.Italic,
                     x => DocumentView.Selection.Italic = x
@@ -202,25 +219,61 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 break;
             case "par":
+                CleanUp();
                 DocumentView.Controller.Type(Document.NewParagraphSeparator.ToString());
                 break;
             case "line":
+                CleanUp();
                 DocumentView.Controller.Type("\n");
                 break;
             case "strike":
-
+                CleanUp();
                 if (param is 0)
                     ApplySimpleStyleOff(ImportFormatting.Strikethrough, x => DocumentView.Selection.Strikethrough = x);
                 else
                     ApplySimpleStyleOn(ImportFormatting.Strikethrough, x => DocumentView.Selection.Strikethrough = x);
                 break;
             // scaps
+            case "trowd":
+                tableInfo = new();
+                break;
+            case "cellx":
+                if (tableInfo.HasValue && param.HasValue)
+                {
+                    // Add new cell
+                    tableInfo.Value.Columns.Add(new(param.Value, TableLengthMode.Ratio));
+                }
+                break;
+            case "clvertalt":
+            case "clvertalc":
+            case "clvertalb":
+            case "row":
             default:
                 if (commandContext.ShouldBeGroupCommand) commandContext.CommandGroupHandler = EmptyRTFParserHandler.Instance;
                 break;
         }
     }
-
+    void CleanUp()
+    {
+        if (tableInfo.HasValue)
+        {
+            
+        }
+    }
+    TableInfo? tableInfo;
+    struct TableInfo
+    {
+        public List<TableLength> Columns = new();
+        public TableInfo()
+        {
+        }
+        int PreviousOffset = 0;
+        void AddColumn(int Offset)
+        {
+            Columns.Add(new(Offset - PreviousOffset, TableLengthMode.Ratio));
+            PreviousOffset = Offset;
+        }
+    }
     public void ExitGroup(RTFGroup group)
     {
 

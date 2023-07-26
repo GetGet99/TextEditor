@@ -10,7 +10,7 @@ partial class RichTextEditorUICanvas : Panel
 {
     static partial void OnArrangeRectChanged(DependencyObject obj, Rect oldValue, Rect newValue)
     {
-        (VisualTreeHelper.GetParent(obj) as RichTextEditorCanvas)?.InvalidateArrange();
+        (VisualTreeHelper.GetParent(obj) as RichTextEditorUICanvas)?.InvalidateArrange();
     }
     protected override Size ArrangeOverride(Size finalSize)
     {

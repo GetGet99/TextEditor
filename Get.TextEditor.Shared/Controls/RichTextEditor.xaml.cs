@@ -1,5 +1,6 @@
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
+using System;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
@@ -16,18 +17,32 @@ partial class RichTextEditor : UserControl
             }
         };
     }
-    void InsertUIFrameworkElement(FrameworkElement ele)
+    //void InsertUIFrameworkElement(FrameworkElement ele)
+    //{
+    //    ele.PointerEntered += (_, e) =>
+    //    {
+    //        IsCursorInside = false;
+    //    };
+    //    DocumentView.Controller.Type(new FrameworkElementRun(
+    //        this,
+    //        ele,
+    //        DocumentView.Selection.Range.IsRange ?
+    //        DocumentView.OwnerDocument.GetStyleAtPosition(DocumentView.Selection.Range.Normalized.EndCaretPosition) :
+    //        DocumentView.Selection.CurrentCaretStyle
+    //    ));
+    //}
+    void InsertUIElement(IUIElementFactory uIElementFactory)
     {
-        ele.PointerEntered += (_, e) =>
+        var factory = new FactoryWrapper(uIElementFactory, (view, ele) =>
         {
-            IsCursorInside = false;
-        };
-        DocumentView.Controller.Type(new FrameworkElementRun(
-            this,
-            ele,
-            DocumentView.Selection.Range.IsRange ?
-            DocumentView.OwnerDocument.GetStyleAtPosition(DocumentView.Selection.Range.Normalized.EndCaretPosition) :
-            DocumentView.Selection.CurrentCaretStyle
-        ));
+            if (view == this)
+            {
+                ele.PointerEntered += (_, e) =>
+                {
+                    IsCursorInside = false;
+                };
+            }
+        });
+        DocumentView.Controller.InsertNewParagraph(new UIElementParagraph(DocumentView.Selection.CurrentCaretStyle, factory, this));
     }
 }

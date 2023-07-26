@@ -9,6 +9,8 @@ using System.Linq;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
 using Get.RichTextKit;
 using UITextBlock = Windows.UI.Xaml.Controls.TextBlock;
+using Get.RichTextKit.Editor.Paragraphs.Decoration;
+using Get.TextEditor.UWP.Decoration;
 
 namespace Get.TextEditor;
 partial class RichTextEditor
@@ -45,12 +47,21 @@ partial class RichTextEditor
             case VirtualKey.T:
                 if (IsKeyDown(VirtualKey.Control))
                 {
+                    //void TestUIElement()
+                    //{
+                    //    var ele = new Button { Content = "Test", Flyout = new Flyout { Content = new UITextBlock { Text = "Hi" } } };
+                    //    //var ele = new CheckBox { MinWidth = 0, MinHeight = 0, Padding = default };
+                    //    ele.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
+                    //    InsertUIFrameworkElement(ele);
+                    //}
                     void TestUIElement()
                     {
-                        var ele = new Button { Content = "Test", Flyout = new Flyout { Content = new UITextBlock { Text = "Hi" } } };
-                        //var ele = new CheckBox { MinWidth = 0, MinHeight = 0, Padding = default };
-                        ele.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
-                        InsertUIFrameworkElement(ele);
+                        static Button Factory()
+                        {
+                            var ele = new Button { Content = "My Button", Flyout = new Flyout { Content = new UITextBlock { Text = "UIElement Support Is (Almost) Back" }, ShouldConstrainToRootBounds = false } };
+                            return ele;
+                        }
+                        InsertUIElement(new UIElementSimpleFactory<Button>(Factory));
                     }
                     void TestHorizontalParagraph()
                     {
@@ -80,7 +91,18 @@ partial class RichTextEditor
                         var table = new TableParagraph(style, 3, 3);
                         DocumentView.Controller.InsertNewParagraph(table);
                     }
-                    TestTable();
+                    void TestRemoveDecoration()
+                    {
+                        var para = DocumentView.OwnerDocument.Paragraphs.GlobalChildrenFromCodePointIndex(DocumentView.Selection.Range.StartCaretPosition, out _, out _);
+                        var decoration = para.Properties.Decoration;
+                        //(decoration as NumberListDecoration).CountMode = CountMode.ContinueNumbering;
+                        para.Properties.Decoration = null;
+                        decoration.RemovedFromLayout();
+                        DocumentView.OwnerDocument.Layout.InvalidateAndValid();
+                        DocumentView.RequestRedraw();
+                    }
+                    TestRemoveDecoration();
+                    //TestUIElement();
                 }
                 else goto default;
                 break;
@@ -102,7 +124,18 @@ partial class RichTextEditor
                 break;
             case VirtualKey.L:
                 if (IsKeyDown(VirtualKey.Control))
-                    DocumentView.Selection.ApplyParagraphSetting(TextAlignment.Left, AlignmentGetter, AlignmentSetter);
+                {
+                    if (IsKeyDown(VirtualKey.Shift))
+                        DocumentView.Selection.ApplyParagraphSetting(new BulletDecoration(), static x => x.Properties.Decoration, static (x, y) =>
+                        {
+                            if (y is BulletDecoration && x.Properties.Decoration is BulletDecoration)
+                                return false;
+                            x.Properties.Decoration = y;
+                            return true;
+                        });
+                    else
+                        DocumentView.Selection.ApplyParagraphSetting(TextAlignment.Left, AlignmentGetter, AlignmentSetter);
+                }
                 else goto default;
                 break;
             case VirtualKey.E:
@@ -138,6 +171,63 @@ partial class RichTextEditor
             case VirtualKey.Y:
                 if (IsKeyDown(VirtualKey.Control))
                     DocumentView.OwnerDocument.UndoManager.Redo(DocumentView.InvokeUpdateInfo);
+                else goto default;
+                break;
+                // TEMPORARY KEYBIND
+            case VirtualKey.Number1 or VirtualKey.NumberPad1:
+                if (IsKeyDown(VirtualKey.Control))
+                {
+                    DocumentView.Selection.ApplyParagraphSetting(new NumberListDecoration(), static x => x.Properties.Decoration, static (x, y) =>
+                    {
+                        if (y is NumberListDecoration && x.Properties.Decoration is NumberListDecoration)
+                            return false;
+                        x.Properties.Decoration = y;
+                        return true;
+                    });
+                }
+                else goto default;
+                break;
+            case VirtualKey.Number2 or VirtualKey.NumberPad2:
+                if (IsKeyDown(VirtualKey.Control))
+                {
+                    DocumentView.Selection.ApplyParagraphSetting(CountMode.ResetNumbering, static x => (x.Properties.Decoration as NumberListDecoration)?.CountMode, static (x, y) =>
+                    {
+                        if (x.Properties.Decoration is NumberListDecoration deco && y.HasValue)
+                        {
+                            deco.CountMode = y.Value;
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+                else goto default;
+                break;
+            case VirtualKey.Number3 or VirtualKey.NumberPad3:
+                if (IsKeyDown(VirtualKey.Control))
+                {
+                    DocumentView.Selection.ApplyParagraphSetting(CountMode.ContinueNumbering, static x => (x.Properties.Decoration as NumberListDecoration)?.CountMode, static (x, y) =>
+                    {
+                        if (x.Properties.Decoration is NumberListDecoration deco && y.HasValue)
+                        {
+                            deco.CountMode = y.Value;
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+                else goto default;
+                break;
+            case (VirtualKey)191: // Slash
+                if (IsKeyDown(VirtualKey.Control))
+                {
+                    DocumentView.Selection.ApplyParagraphSetting(new CheckboxDecoration(), static x => x.Properties.Decoration, static (x, y) =>
+                    {
+                        if (y is CheckboxDecoration && x.Properties.Decoration is CheckboxDecoration)
+                            return false;
+                        x.Properties.Decoration = y;
+                        return true;
+                    });
+                }
                 else goto default;
                 break;
             default:

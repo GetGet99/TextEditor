@@ -1,178 +1,321 @@
-﻿//using SkiaSharp;
-//using System.Collections.Generic;
-//using Get.RichTextKit.Editor;
-//using Topten.RichTextKit;
-//using Windows.UI.Xaml;
-//using System.Drawing;
-//using Topten.RichTextKit.Utils;
-//using Get.RichTextKit.Editor.Paragraphs;
-//using Windows.UI.Xaml.Controls;
+﻿#nullable enable
+using SkiaSharp;
+using System.Collections.Generic;
+using Get.RichTextKit.Editor;
+using Windows.UI.Xaml;
+using System.Drawing;
+using Get.RichTextKit.Editor.Paragraphs;
+using Windows.UI.Xaml.Controls;
+using Get.RichTextKit.Styles;
+using Get.RichTextKit.Editor.Structs;
+using Get.RichTextKit;
+using Get.RichTextKit.Utils;
+using Get.RichTextKit.Editor.DocumentView;
+using Get.EasyCSharp;
+using System;
 
-//namespace Get.TextEditor;
+namespace Get.TextEditor;
+class DataBindFactory : UIElementSimpleFactory<ContentControl>
+{
+    object? _Object;
+    public object? Object
+    {
+        get => _Object; set {
+            _Object = value;
+            foreach (var c in Controls.Values) c.Content = value;
+            if (nullControl is not null) nullControl.Content = value;
+        }
+    }
+    DataTemplate? _DataTemplate;
 
-//internal class FrameworkElementParagraph : Paragraph
-//{
-//    readonly Dictionary<IDocumentViewOwner, ContentControl> ViewerControls = new();
-//    FrameworkElement ele;
-//    IStyle _PlaceholderStyle;
-//    public IStyle PlaceholderStyle { get => _PlaceholderStyle; set => ApplyStyle(value, 0, 0); }
-//    public FrameworkElementParagraph()
-//    {
-//        ele.SizeChanged += (_, _) => Owner?.Layout.Invalidate();
-//    }
-//    float _width;
-//    /// <inheritdoc />
-//    public override void Layout(IParentInfo owner)
-//    {
-//        DataTemplate template = new();
-//        _width = 
-//                owner.AvaliableWidth
-//                - Margin.Left - Margin.Right;
+    public DataBindFactory()
+    {
+        Factory = _ => new() { Content = Object, ContentTemplate = DataTemplate };
+    }
 
-//        // For layout just need to set the appropriate layout width on the text block
-//        if (owner.LineWrap)
-//        {
-//            ele.MaxWidth = ele.Width;
-//        }
-//        else
-//            ele.MaxWidth = double.PositiveInfinity;
-//    }
-//    void LateLayout()
-//    {
-//        _width =
-//                owner.AvaliableWidth
-//                - Margin.Left - Margin.Right;
+    public DataTemplate? DataTemplate
+    {
+        get => _DataTemplate; set {
+            _DataTemplate = value;
+            if (nullControl is not null) nullControl.ContentTemplate = value;
+            foreach (var c in Controls.Values) c.ContentTemplate = value;
+        }
+    }
+}
+class FactoryWrapper : UIElementSimpleFactory<UIElement>
+{
+    public FactoryWrapper(IUIElementFactory original, Action<IDocumentViewOwner?, UIElement> afterInitialize) : base(view =>
+    {
+        var element = original.GetUIElement(view);
+        afterInitialize(view, element);
+        return element;
+    })
+    {
+        
+    }
+}
+class UIElementSimpleFactory<T> : IUIElementFactory<T> where T : UIElement
+{
+    protected Func<IDocumentViewOwner?, T> Factory;
+    public UIElementSimpleFactory(Func<IDocumentViewOwner?, T> factory)
+    {
+        Factory = factory;
+    }
+    public UIElementSimpleFactory(Func<T> factory)
+    {
+        Factory = _ => factory();
+    }
+    protected UIElementSimpleFactory() { Factory = null!; }
+    protected readonly Dictionary<IDocumentViewOwner, T> Controls = new();
+    protected T? nullControl;
+    public T GetElement(IDocumentViewOwner? view)
+    {
+        if (view is null)
+            return nullControl ??= Factory(view);
+        if (Controls.TryGetValue(view, out var control)) return control;
+        else return Controls[view] = Factory(view);
+    }
 
-//        // For layout just need to set the appropriate layout width on the text block
-//        if (owner.LineWrap)
-//        {
-//            ele.MaxWidth = ele.Width;
-//        }
-//        else
-//            ele.MaxWidth = double.PositiveInfinity;
-//    }
+    UIElement IUIElementFactory.GetUIElement(IDocumentViewOwner? view)
+    => GetElement(view);
+}
+public interface IUIElementFactory
+{
+    UIElement GetUIElement(IDocumentViewOwner? view);
+}
+interface IUIElementFactory<T> : IUIElementFactory where T : UIElement
+{
+    T GetElement(IDocumentViewOwner? view);
+}
+internal partial class UIElementParagraph : Paragraph, IAlignableParagraph
+{
+    readonly IUIElementFactory UIElementFactory;
+    UIElement FirstControl;
+    public UIElementParagraph(IStyle style, IUIElementFactory factory, IDocumentViewOwner? MainView)
+    {
+        InternalStyle = style;
+        UIElementFactory = factory;
+        FirstControl = UIElementFactory.GetUIElement(MainView);
+    }
+    IStyle InternalStyle { get; set; }
+    public override IStyle StartStyle => InternalStyle;
+    public override IStyle EndStyle => InternalStyle;
 
-//    /// <inheritdoc />
-//    public override void Paint(SKCanvas canvas, TextPaintOptions options, IDocumentViewOwner owner) {
-//        RichTextEditorUICanvas.SetArrangeRect(ele, new(DrawingContentPosition.X, DrawingContentPosition.Y, _width, ele.DesiredSize.Height));
+    public override int CodePointLength => 1;
 
-//        ele.Translation = new(DrawingContentPosition.X, DrawingContentPosition.Y, 0);
+    public override int LineCount => 1;
 
-//        if (options.Selection.HasValue)
-//        {
-//            var range = options.Selection.Value;
-//            if (range.Minimum is <= 0 && range.Maximum is >= 1)
-//            {
-//                using var paint = new SKPaint() { Color = options.SelectionColor };
-//                canvas.DrawRect(DrawingContentPosition.X, DrawingContentPosition.Y, (float)ele.ActualWidth, (float)ele.ActualHeight, paint);
-//            }
-//        }
-//    }
+    public override int DisplayLineCount => 1;
 
-//    /// <inheritdoc />
-//    public override CaretInfo GetCaretInfo(CaretPosition position)
-//    {
-//        if (position.CodePointIndex == 0)
-//        {
-//            return
-//                new()
-//                {
-//                    CaretXCoord = 0,
-//                    LineIndex = 0,
-//                    CodePointIndex = position.CodePointIndex,
-//                    CaretRectangle = new(0, 0, 0, (float)ele.ActualHeight)
-//                };
-//        } else
-//        {
+    public RichTextKit.TextAlignment Alignment { get; set; }
 
-//            return
-//                new()
-//                {
-//                    CaretXCoord = 0,
-//                    LineIndex = 0,
-//                    CodePointIndex = position.CodePointIndex,
-//                    CaretRectangle = new(0, 0, 0, (float)ele.ActualHeight)
-//                };
-//        }
-//    }
+    [Property(
+        Visibility = GeneratorVisibility.Protected, OverrideKeyword = true,
+        PropertyName = "ContentWidthOverride",
+        SetVisibility = GeneratorVisibility.DoNotGenerate
+    )]
+    float _ContentWidth;
+    [Property(
+        Visibility = GeneratorVisibility.Protected, OverrideKeyword = true,
+        PropertyName = "ContentHeightOverride",
+        SetVisibility = GeneratorVisibility.DoNotGenerate
+    )]
+    float _ContentHeight;
 
-//    /// <inheritdoc />
-//    public override HitTestResult HitTest(PointF pt) => HitTestResult.None;
+    public override void ApplyStyle(IStyle style, int position, int length)
+    {
+        if (length >= 1)
+            InternalStyle = style;
+    }
 
-//    /// <inheritdoc />
-//    public override HitTestResult HitTestLine(int lineIndex, float x) => HitTestResult.None;
+    public override bool CanDeletePartial(DeleteInfo deleteInfo, out TextRange requestedSelection)
+    {
+        requestedSelection = new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+        return false;
+    }
 
-//    public override void DeletePartial(UndoManager<Document> UndoManager, SubRun range)
-//    {
-//        // do nothing
-//    }
+    public override bool DeletePartial(DeleteInfo deleteInfo, out TextRange requestedSelection, UndoManager<Document, DocumentViewUpdateInfo> UndoManager)
+    {
+        requestedSelection = new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+        return false;
+    }
 
-//    public override bool TryJoin(UndoManager<Document> UndoManager, int thisIndex)
-//    {
-//        // can't join with others
-//        return false;
-//    }
+    public override CaretInfo GetCaretInfo(CaretPosition position)
+    {
+        var xOffset = XAlignmentOffset;
+        if (position.CodePointIndex == StartCaretPosition.CodePointIndex)
+        {
+            return new()
+            {
+                CaretRectangle = new((float)xOffset, 0, (float)xOffset, ContentHeight),
+                CaretXCoord = (float)xOffset,
+                CodePointIndex = 0,
+                LineIndex = 0
+            };
+        } else
+        {
+            return new()
+            {
+                CaretRectangle = new((float)(xOffset + FirstControl.DesiredSize.Width), 0, (float)(xOffset + FirstControl.DesiredSize.Width), ContentHeight),
+                CaretXCoord = (float)(xOffset + FirstControl.DesiredSize.Width),
+                CodePointIndex = position.CodePointIndex,
+                LineIndex = 0
+            };
+        }
+    }
 
-//    public override Paragraph Split(UndoManager<Document> UndoManager, int splitIndex)
-//    {
-//        // no can't split
-//        return null;
-//    }
-//    public string PlaceholderText = "UIElement";
-//    public override void GetText(Utf32Buffer buffer, SubRun range)
-//    {
-//        buffer.Add(PlaceholderText);
-//    }
+    public override LineInfo GetLineInfo(int line) => new(line, StartCaretPosition, EndCaretPosition, null, null);
 
-//    public override IStyle GetStyleAtPosition(CaretPosition position)
-//        => PlaceholderStyle;
+    public override TextRange GetSelectionRange(CaretPosition position, ParagraphSelectionKind kind)
+    {
+        if (kind is not ParagraphSelectionKind.None)
+            return new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+        else
+            return new(position);
+    }
 
-//    public override IReadOnlyList<StyleRunEx> GetStyles(SubRun range)
-//        => new StyleRunEx[] { new(range.Offset, range.Length, PlaceholderStyle) };
+    public override IStyle GetStyleAtPosition(CaretPosition position)
+    {
+        return InternalStyle;
+    }
 
-//    public override void ApplyStyle(IStyle style, int position, int length)
-//    {
-//        _PlaceholderStyle = style;
-//    }
+    public override IReadOnlyList<StyleRunEx> GetStyles(int position, int length)
+    {
+        return new StyleRunEx[] { new(position, length, InternalStyle) };
+    }
 
-//    /// <inheritdoc />
-//    public override IReadOnlyList<int> CaretIndicies => new int[] { 0, 1 };
+    public override void GetTextByAppendTextToBuffer(Utf32Buffer buffer, int position, int length)
+    {
+        buffer.Add(new int[] { Document.NewParagraphSeparator });
+    }
 
-//    /// <inheritdoc />
-//    public override IReadOnlyList<int> WordBoundaryIndicies => new int[] { 0, 1 };
+    public override HitTestResult HitTest(PointF pt)
+        => HitTestLine(0, pt.X);
 
-//    /// <inheritdoc />
-//    public override IReadOnlyList<int> LineIndicies => new int[] { 0, 1 };
+    public override HitTestResult HitTestLine(int lineIndex, float x)
+    {
+        if (x > ContentWidth / 2)
+        {
+            return new()
+            {
+                ClosestCodePointIndex = 1,
+                OverCodePointIndex = 1,
+                AltCaretPosition = true,
+                ClosestLine = 0,
+                OverLine = 0
+            };
+        } else
+        {
+            return new()
+            {
+                ClosestCodePointIndex = 0,
+                OverCodePointIndex = 0,
+                AltCaretPosition = false,
+                ClosestLine = 0,
+                OverLine = 0
+            };
+        }
+    }
+    readonly List<IDocumentViewOwner> KnownOwners = new();
+    public override void Paint(SKCanvas canvas, PaintOptions options)
+    {
+        RichTextEditorUICanvas.SetArrangeRect(GetElement(options.ViewOwner),
+            new(DrawingContentPosition.X + XAlignmentOffset
+            , DrawingContentPosition.Y, FirstControl.DesiredSize.Width, FirstControl.DesiredSize.Height)
+        );
+    }
+    public override void NotifyGoingOffscreen(PaintOptions options)
+    {
+        var view = options.ViewOwner;
+        if (view is null) goto End;
+        if (KnownOwners.Contains(view))
+        {
+            if (view is not RichTextEditor editor) return;
+            var element = UIElementFactory.GetUIElement(view);
+            editor.UnsafeGetUICanvas().Children.Remove(element);
+            KnownOwners.Remove(view);
+        }
+    End:
+        base.NotifyGoingOffscreen(options);
+    }
+    protected override void OnParagraphRemoved(Document owner)
+    {
+        foreach (var view in KnownOwners)
+        {
+            if (view is not RichTextEditor editor) continue;
+            var element = UIElementFactory.GetUIElement(view);
+            editor.UnsafeGetUICanvas().Children.Remove(element);
+        }
+        KnownOwners.Clear();
+        base.OnParagraphRemoved(owner);
+    }
+    double XAlignmentOffset =>
+            Alignment switch
+            {
+                RichTextKit.TextAlignment.Right => ContentWidth - FirstControl.DesiredSize.Width,
+                RichTextKit.TextAlignment.Center => (ContentWidth - FirstControl.DesiredSize.Width) / 2,
+                RichTextKit.TextAlignment.Left or RichTextKit.TextAlignment.Auto or _ => 0
+            };
+    UIElement GetElement(IDocumentViewOwner? view)
+    {
+        var element = UIElementFactory.GetUIElement(view);
+        if (view is not RichTextEditor editor) return element;
+        if (!KnownOwners.Contains(view))
+        {
+            editor.UnsafeGetUICanvas().Children.Add(element);
+            KnownOwners.Add(view);
+        }
+        return element;
+    }
+    public override bool ShouldDeletAll(DeleteInfo deleteInfo)
+    {
+        if (deleteInfo.Range.Start <= StartCaretPosition.CodePointIndex && deleteInfo.Range.End >= EndCaretPosition.CodePointIndex)
+            return true;
+        return false;
+    }
 
-//    /// <inheritdoc />
-//    public override int Length => 1;
+    public override Paragraph Split(UndoManager<Document, DocumentViewUpdateInfo> UndoManager, int splitIndex)
+    {
+        throw new System.NotImplementedException();
+    }
 
-//    /// <inheritdoc />
-//    public override float ContentWidth => (float)ele.DesiredSize.Width;
+    protected override void LayoutOverride(LayoutParentInfo owner)
+    {
+        FirstControl.Measure(new(owner.AvaliableWidth, double.PositiveInfinity));
+        var desiredSize = FirstControl.DesiredSize;
+        _ContentWidth = owner.AvaliableWidth;
+        _ContentHeight = (float)desiredSize.Height;
+    }
 
-//    /// <inheritdoc />
-//    public override float ContentHeight
-//    {
-//        get
-//        {
-//            return (float)ele.DesiredSize.Height;
-//        }
-//    }
-
-//    public override IStyle StartStyle => PlaceholderStyle;
-
-//    public override IStyle EndStyle => PlaceholderStyle;
-
-//    public override int LineCount => 1;
-
-//    protected override void OnParagraphAdded(Document owner)
-//    {
-//        base.OnParagraphAdded(owner);
-//        Canvas.Children.Add(ele);
-//    }
-//    protected override void OnParagraphRemoved(Document owner)
-//    {
-//        base.OnParagraphRemoved(owner);
-//        Canvas.Children.Remove(ele);
-//    }
-//}
+    protected override NavigationStatus NavigateOverride(TextRange selection, NavigationSnap snap, NavigationDirection direction, bool keepSelection, ref float? ghostXCoord, out TextRange newSelection)
+    {
+        if (direction is NavigationDirection.Up or NavigationDirection.Down)
+            return VerticalNavigateUsingLineInfo(selection, snap, direction, keepSelection, ref ghostXCoord, out newSelection);
+        ghostXCoord = null;
+        if (direction is NavigationDirection.Forward)
+        {
+            if (selection.End < EndCaretPosition.CodePointIndex)
+            {
+                selection.EndCaretPosition = EndCaretPosition;
+                if (!keepSelection) selection.Start = selection.End;
+                newSelection = selection;
+                return NavigationStatus.Success;
+            }
+            newSelection = default;
+            return NavigationStatus.MoveAfter;
+        }
+        else if (direction is NavigationDirection.Backward)
+        {
+            if (selection.Start > StartCaretPosition.CodePointIndex)
+            {
+                selection.EndCaretPosition = EndCaretPosition;
+                if (!keepSelection) selection.Start = selection.End;
+                newSelection = selection;
+                return NavigationStatus.Success;
+            }
+            newSelection = default;
+            return NavigationStatus.MoveBefore;
+        }
+        else throw new System.ArgumentOutOfRangeException();
+    }
+}

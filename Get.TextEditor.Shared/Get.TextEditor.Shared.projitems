@@ -27,6 +27,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\CheckBoxDecoration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\UIDecoration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Caret.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RichTextEditor.DocumentViewOwner.cs" />
@@ -45,8 +47,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\FrameworkElementParagraph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIElementRun.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\RichTextEditorCanvas.xaml.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Controls\" />
   </ItemGroup>
 </Project>
