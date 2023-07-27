@@ -97,7 +97,7 @@ partial class RichTextEditor
                         var decoration = para.Properties.Decoration;
                         //(decoration as NumberListDecoration).CountMode = CountMode.ContinueNumbering;
                         para.Properties.Decoration = null;
-                        decoration.RemovedFromLayout();
+                        decoration?.RemovedFromLayout();
                         DocumentView.OwnerDocument.Layout.InvalidateAndValid();
                         DocumentView.RequestRedraw();
                     }
@@ -130,7 +130,9 @@ partial class RichTextEditor
                         {
                             if (y is BulletDecoration && x.Properties.Decoration is BulletDecoration)
                                 return false;
+                            var oldDeco = x.Properties.Decoration;
                             x.Properties.Decoration = y;
+                            oldDeco?.RemovedFromLayout();
                             return true;
                         });
                     else
@@ -181,7 +183,9 @@ partial class RichTextEditor
                     {
                         if (y is NumberListDecoration && x.Properties.Decoration is NumberListDecoration)
                             return false;
+                        var oldDeco = x.Properties.Decoration;
                         x.Properties.Decoration = y;
+                        oldDeco?.RemovedFromLayout();
                         return true;
                     });
                 }
@@ -224,7 +228,9 @@ partial class RichTextEditor
                     {
                         if (y is CheckboxDecoration && x.Properties.Decoration is CheckboxDecoration)
                             return false;
+                        var oldDeco = x.Properties.Decoration;
                         x.Properties.Decoration = y;
+                        oldDeco?.RemovedFromLayout();
                         return true;
                     });
                 }
