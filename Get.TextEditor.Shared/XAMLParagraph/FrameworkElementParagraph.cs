@@ -164,7 +164,7 @@ internal partial class UIElementParagraph : Paragraph, IAlignableParagraph
         }
     }
 
-    public override LineInfo GetLineInfo(int line) => new(line, StartCaretPosition, EndCaretPosition, null, null);
+    public override LineInfo GetLineInfo(int line) => new(line, 0, ContentHeight, StartCaretPosition, EndCaretPosition, null, null);
 
     public override TextRange GetSelectionRange(CaretPosition position, ParagraphSelectionKind kind)
     {

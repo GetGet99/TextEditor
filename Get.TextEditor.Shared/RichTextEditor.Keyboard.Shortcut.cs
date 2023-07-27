@@ -9,8 +9,9 @@ using System.Linq;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
 using Get.RichTextKit;
 using UITextBlock = Windows.UI.Xaml.Controls.TextBlock;
-using Get.RichTextKit.Editor.Paragraphs.Decoration;
+using Get.RichTextKit.Editor.Paragraphs.Properties.Decoration;
 using Get.TextEditor.UWP.Decoration;
+using DecorationVerticalAlignment = Get.RichTextKit.Editor.Paragraphs.Properties.Decoration.VerticalAlignment;
 
 namespace Get.TextEditor;
 partial class RichTextEditor
@@ -101,7 +102,19 @@ partial class RichTextEditor
                         DocumentView.OwnerDocument.Layout.InvalidateAndValid();
                         DocumentView.RequestRedraw();
                     }
-                    TestRemoveDecoration();
+                    void TestAlignment()
+                    {
+                        var para = DocumentView.OwnerDocument.Paragraphs.GlobalChildrenFromCodePointIndex(DocumentView.Selection.Range.StartCaretPosition, out _, out _);
+                        var decoration = para.Properties.Decoration;
+                        decoration.VerticalAlignment = decoration.VerticalAlignment switch
+                        {
+                            DecorationVerticalAlignment.Top => DecorationVerticalAlignment.Center,
+                            DecorationVerticalAlignment.Center => DecorationVerticalAlignment.Bottom,
+                            DecorationVerticalAlignment.Bottom or _ => DecorationVerticalAlignment.Top
+                        };
+                        DocumentView.RequestRedraw();
+                    }
+                    TestAlignment();
                     //TestUIElement();
                 }
                 else goto default;
