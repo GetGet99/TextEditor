@@ -8,8 +8,35 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     muxc:BackdropMaterial.ApplyToRootOrPageBackground="True"
+    xmlns:editor="using:Get.TextEditor"
+    xmlns:helpers="using:Get.XAMLTools.UI.Helpers"
+    xmlns:ui="using:Get.TextEditor.UWP.UI.Controls"
     >
-
-    <Grid x:Name="RootGrid">
+    <Grid>
+        <editor:RichTextEditor x:Name="Editor" AllowFocusOnInteraction="True" />
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="16">
+            <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="8" PointerPressed="HandleMouseEvent" PointerMoved="HandleMouseEvent" PointerEntered="HandleMouseEvent" PointerExited="HandleMouseEvent" PointerReleased="HandleMouseEvent">
+                <Border.Background>
+                    <AcrylicBrush FallbackColor="#202020" TintColor="#202020" TintOpacity="0.75"/>
+                </Border.Background>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Click="Undo" Padding="5">
+                        <SymbolIcon Symbol="Undo"/>
+                    </Button>
+                    <Button Click="Redo" Padding="5">
+                        <SymbolIcon Symbol="Redo"/>
+                    </Button>
+                    <ui:ToggleButtonEx StyleStatus="{x:Bind Editor.DocumentView.Selection.Bold, Mode=TwoWay}" Padding="5">
+                        <SymbolIcon Symbol="Bold"/>
+                    </ui:ToggleButtonEx>
+                    <ui:ToggleButtonEx StyleStatus="{x:Bind Editor.DocumentView.Selection.Italic, Mode=TwoWay}" Padding="5">
+                        <SymbolIcon Symbol="Italic"/>
+                    </ui:ToggleButtonEx>
+                    <ui:ToggleButtonEx StyleStatus="{x:Bind Editor.DocumentView.Selection.Underline, Mode=TwoWay}" Padding="5">
+                        <SymbolIcon Symbol="Underline"/>
+                    </ui:ToggleButtonEx>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

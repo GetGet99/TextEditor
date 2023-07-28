@@ -1,22 +1,23 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Get.EasyCSharp;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+namespace TryRichText.UWP;
 
-namespace TryRichText.UWP
+public sealed partial class MainPage : Page
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainPage : Page
+    public MainPage()
     {
-        public MainPage()
-        {
-            this.InitializeComponent();
-            var editor1 = new Get.TextEditor.RichTextEditor() { AllowFocusOnInteraction = true };
-            RootGrid.Children.Add(editor1);
-            //var editor2 = new Get.TextEditor.RichTextEditor(editor1.DocumentView.OwnerDocument) { AllowFocusOnInteraction = true };
-            //RootGrid.Children.Add(editor2);
-            //Grid.SetColumn(editor2, 1);
-        }
+        InitializeComponent();
     }
+    [Event<RoutedEventHandler>]
+    void Undo()
+        => Editor.DocumentView.OwnerDocument.UndoManager.Undo(Editor.DocumentView.InvokeUpdateInfo);
+    [Event<RoutedEventHandler>]
+    void Redo()
+        => Editor.DocumentView.OwnerDocument.UndoManager.Redo(Editor.DocumentView.InvokeUpdateInfo);
+    [Event<PointerEventHandler>]
+    void HandleMouseEvent(PointerRoutedEventArgs ev)
+        => ev.Handled = true;
 }
