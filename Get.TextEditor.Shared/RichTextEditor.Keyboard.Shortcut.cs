@@ -104,9 +104,8 @@ partial class RichTextEditor
                     }
                     void TestAlignment()
                     {
-                        var para = DocumentView.OwnerDocument.Paragraphs.GlobalChildrenFromCodePointIndex(DocumentView.Selection.Range.StartCaretPosition, out _, out _);
-                        var decoration = para.Properties.Decoration;
-                        decoration.VerticalAlignment = decoration.VerticalAlignment switch
+                        DocumentView.Selection.ParagraphSettings.DecorationVerticalAlignment =
+                            DocumentView.Selection.ParagraphSettings.DecorationVerticalAlignment switch
                         {
                             DecorationVerticalAlignment.Top => DecorationVerticalAlignment.Center,
                             DecorationVerticalAlignment.Center => DecorationVerticalAlignment.Bottom,
@@ -124,43 +123,38 @@ partial class RichTextEditor
                 else goto default;
                 break;
             case VirtualKey.B:
-                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Bold) DocumentView.Selection.Bold = DocumentView.Selection.Bold.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Bold)
+                    DocumentView.Selection.Bold = DocumentView.Selection.Bold.Toggle();
                 else goto default;
                 break;
             case VirtualKey.U:
-                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Underline) DocumentView.Selection.Underline = DocumentView.Selection.Underline.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Underline)
+                    DocumentView.Selection.Underline = DocumentView.Selection.Underline.Toggle();
                 else goto default;
                 break;
             case VirtualKey.I:
-                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Italic) DocumentView.Selection.Italic = DocumentView.Selection.Italic.Toggle();
+                if (IsKeyDown(VirtualKey.Control) && AllowedShortcutFormatting.Italic)
+                    DocumentView.Selection.Italic = DocumentView.Selection.Italic.Toggle();
                 else goto default;
                 break;
             case VirtualKey.L:
                 if (IsKeyDown(VirtualKey.Control))
                 {
                     if (IsKeyDown(VirtualKey.Shift))
-                        DocumentView.Selection.ApplyParagraphSetting(new BulletDecoration(), static x => x.Properties.Decoration, static (x, y) =>
-                        {
-                            if (y is BulletDecoration && x.Properties.Decoration is BulletDecoration)
-                                return false;
-                            var oldDeco = x.Properties.Decoration;
-                            x.Properties.Decoration = y;
-                            oldDeco?.RemovedFromLayout();
-                            return true;
-                        });
+                        DocumentView.Selection.ParagraphSettings.HasBulletListDecoration = DocumentView.Selection.ParagraphSettings.HasBulletListDecoration.Toggle();
                     else
-                        DocumentView.Selection.ApplyParagraphSetting(TextAlignment.Left, AlignmentGetter, AlignmentSetter);
+                        DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Left;
                 }
                 else goto default;
                 break;
             case VirtualKey.E:
                 if (IsKeyDown(VirtualKey.Control))
-                    DocumentView.Selection.ApplyParagraphSetting(TextAlignment.Center, AlignmentGetter, AlignmentSetter);
+                    DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Center;
                 else goto default;
                 break;
             case VirtualKey.R:
                 if (IsKeyDown(VirtualKey.Control))
-                    DocumentView.Selection.ApplyParagraphSetting(TextAlignment.Right, AlignmentGetter, AlignmentSetter);
+                    DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Right;
                 else goto default;
                 break;
             case (VirtualKey)0xBB: // OEM + or = key
@@ -192,60 +186,34 @@ partial class RichTextEditor
             case VirtualKey.Number1 or VirtualKey.NumberPad1:
                 if (IsKeyDown(VirtualKey.Control))
                 {
-                    DocumentView.Selection.ApplyParagraphSetting(new NumberListDecoration(), static x => x.Properties.Decoration, static (x, y) =>
-                    {
-                        if (y is NumberListDecoration && x.Properties.Decoration is NumberListDecoration)
-                            return false;
-                        var oldDeco = x.Properties.Decoration;
-                        x.Properties.Decoration = y;
-                        oldDeco?.RemovedFromLayout();
-                        return true;
-                    });
+                    DocumentView.Selection.ParagraphSettings.HasNumberListDecoration = DocumentView.Selection.ParagraphSettings.HasNumberListDecoration.Toggle();
                 }
                 else goto default;
                 break;
             case VirtualKey.Number2 or VirtualKey.NumberPad2:
                 if (IsKeyDown(VirtualKey.Control))
                 {
-                    DocumentView.Selection.ApplyParagraphSetting(CountMode.ResetNumbering, static x => (x.Properties.Decoration as NumberListDecoration)?.CountMode, static (x, y) =>
-                    {
-                        if (x.Properties.Decoration is NumberListDecoration deco && y.HasValue)
-                        {
-                            deco.CountMode = y.Value;
-                            return true;
-                        }
-                        return false;
-                    });
+                    DocumentView.Selection.ParagraphSettings.DecorationCountMode = CountMode.ResetNumbering;
                 }
                 else goto default;
                 break;
             case VirtualKey.Number3 or VirtualKey.NumberPad3:
                 if (IsKeyDown(VirtualKey.Control))
                 {
-                    DocumentView.Selection.ApplyParagraphSetting(CountMode.ContinueNumbering, static x => (x.Properties.Decoration as NumberListDecoration)?.CountMode, static (x, y) =>
-                    {
-                        if (x.Properties.Decoration is NumberListDecoration deco && y.HasValue)
-                        {
-                            deco.CountMode = y.Value;
-                            return true;
-                        }
-                        return false;
-                    });
+                    DocumentView.Selection.ParagraphSettings.DecorationCountMode = CountMode.ContinueNumbering;
                 }
                 else goto default;
                 break;
             case (VirtualKey)191: // Slash
                 if (IsKeyDown(VirtualKey.Control))
                 {
-                    DocumentView.Selection.ApplyParagraphSetting(new CheckboxDecoration(), static x => x.Properties.Decoration, static (x, y) =>
-                    {
-                        if (y is CheckboxDecoration && x.Properties.Decoration is CheckboxDecoration)
-                            return false;
-                        var oldDeco = x.Properties.Decoration;
-                        x.Properties.Decoration = y;
-                        oldDeco?.RemovedFromLayout();
-                        return true;
-                    });
+                    DocumentView.Selection.ParagraphSettings.SetParagraphDecorationToType(
+                        DocumentView.Selection.ParagraphSettings.HasParagraphDecorationOfType<CheckboxDecoration>() switch {
+                            StyleStatus.On => StyleStatus.Off,
+                            StyleStatus.Undefined or StyleStatus.Off or _ => StyleStatus.On
+                        },
+                        () => new CheckboxDecoration()
+                    );
                 }
                 else goto default;
                 break;
