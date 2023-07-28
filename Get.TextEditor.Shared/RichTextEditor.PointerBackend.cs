@@ -26,21 +26,22 @@ partial class RichTextEditor : UserControl
             Focus(FocusState.Programmatic);
             EditContext.NotifyFocusEnter();
 
-            pressed = true;
+            if (e.GetCurrentPoint(EditorCanvas).Properties.IsLeftButtonPressed)
+            {
+                pressed = true;
 
-            EditorCanvas.SelectionHandle = ShouldShowHandle(e.Pointer.PointerDeviceType);
-            if (ShouldManipulationScroll(e.Pointer.PointerDeviceType))
-                return;
-
+                EditorCanvas.SelectionHandle = ShouldShowHandle(e.Pointer.PointerDeviceType);
+                if (ShouldManipulationScroll(e.Pointer.PointerDeviceType))
+                    return;
+            }
             PointerDoPressed(e);
         };
         EditorCanvas.PointerReleased += (_, e) =>
         {
             if (!pressed || !moved) goto End;
-
             if (ShouldManipulationScroll(e.Pointer.PointerDeviceType))
                 PointerDoPressed(e);
-            
+            VirtualizedPointerReleased(e);
             End:
             moved = false;
             pressed = false;

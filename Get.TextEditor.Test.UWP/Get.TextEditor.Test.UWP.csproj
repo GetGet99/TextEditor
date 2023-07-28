@@ -126,6 +126,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymbolEx.cs" />
+    <Compile Include="ToggleMenuFlyoutItemEx.xaml.cs">
+      <DependentUpon>ToggleMenuFlyoutItemEx.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToggleButtonEx.xaml.cs">
       <DependentUpon>ToggleButtonEx.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ToggleMenuFlyoutItemEx.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

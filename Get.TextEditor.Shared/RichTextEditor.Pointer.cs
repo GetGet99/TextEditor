@@ -32,7 +32,16 @@ partial class RichTextEditor : UserControl
     CaretPosition SelectionStart;
     void VirtualizedPointerPressed(PointerRoutedEventArgs e, int clickCount)
     {
-        var hitTest = HitTest(e);
+        var pt = e.GetCurrentPoint(this);
+        var hitTest = HitTest(pt.Position);
+        if (pt.Properties.IsRightButtonPressed)
+        {
+            if (DocumentView.Selection.Range.Contains(
+                hitTest.IsHit() ? hitTest.OverCodePointIndex : hitTest.ClosestCodePointIndex,
+                true))
+                // Don't do any selection
+                return;
+        }
         bool Shifting = e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Shift);
         if (hitTest.IsHit())
         {
@@ -61,6 +70,19 @@ partial class RichTextEditor : UserControl
             DocumentView.Controller.Select(hitTest.CaretPosition, SelectionKind.Paragraph);
         }
     }
+    void VirtualizedPointerReleased(PointerRoutedEventArgs e)
+    {
+        var pt = e.GetCurrentPoint(this);
+        if (pt.Properties.IsRightButtonPressed)
+        {
+            ContextFlyoutShowing?.Invoke(this, new());
+            ContextFlyout.ShowAt(this, new() {
+                Placement = Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedLeft,
+                Position = pt.Position
+            });
+        }
+    }
+    public event RoutedEventHandler? ContextFlyoutShowing;
     CoreCursor? oldPointer;
     bool _isCursorInside = false;
     bool IsCursorInside
@@ -84,7 +106,7 @@ partial class RichTextEditor : UserControl
         var point = e.GetCurrentPoint(this);
         var hitTest = HitTest(point.Position);
         IsCursorInside = hitTest.IsHit();
-        if (IsHolding && point.IsInContact)
+        if (IsHolding && point.IsInContact && point.Properties.IsLeftButtonPressed)
         {
             DocumentView.Controller.Select(new(SelectionStart.CodePointIndex, hitTest.ClosestCodePointIndex, hitTest.AltCaretPosition));
         }

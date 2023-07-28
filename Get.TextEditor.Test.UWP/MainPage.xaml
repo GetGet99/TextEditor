@@ -13,7 +13,17 @@
     xmlns:ui="using:Get.TextEditor.UWP.UI.Controls"
     >
     <Grid>
-        <editor:RichTextEditor x:Name="Editor" AllowFocusOnInteraction="True" />
+        <editor:RichTextEditor x:Name="Editor" AllowFocusOnInteraction="True">
+            <editor:RichTextEditor.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem Click="Undo" Text="Undo" Icon="{helpers:SymbolExIcon Symbol=Undo}"/>
+                    <MenuFlyoutItem Click="Redo" Text="Redo" Icon="{helpers:SymbolExIcon Symbol=Redo}"/>
+                    <ui:ToggleMenuFlyoutItemEx Text="Bold" Icon="{helpers:SymbolExIcon Symbol=Bold}" StyleStatus="{x:Bind Editor.DocumentView.Selection.Bold, Mode=TwoWay}" Padding="5"/>
+                    <ui:ToggleMenuFlyoutItemEx Text="Italic" Icon="{helpers:SymbolExIcon Symbol=Italic}" StyleStatus="{x:Bind Editor.DocumentView.Selection.Italic, Mode=TwoWay}" Padding="5"/>
+                    <ui:ToggleMenuFlyoutItemEx Text="Underline" Icon="{helpers:SymbolExIcon Symbol=Underline}" StyleStatus="{x:Bind Editor.DocumentView.Selection.Underline, Mode=TwoWay}" Padding="5"/>
+                </MenuFlyout>
+            </editor:RichTextEditor.ContextFlyout>
+        </editor:RichTextEditor>
         <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="16">
             <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="8" PointerPressed="HandleMouseEvent" PointerMoved="HandleMouseEvent" PointerEntered="HandleMouseEvent" PointerExited="HandleMouseEvent" PointerReleased="HandleMouseEvent">
                 <Border.Background>
