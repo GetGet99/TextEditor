@@ -10,6 +10,7 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
+        Editor.UIConfigParagraphTemplateSelector = new UIParagraphSettingTemplate().GetDataTemplateSelector();
     }
     [Event<RoutedEventHandler>]
     void Undo()

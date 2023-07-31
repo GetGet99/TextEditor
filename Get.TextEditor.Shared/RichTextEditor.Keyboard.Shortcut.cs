@@ -113,8 +113,9 @@ partial class RichTextEditor
                         };
                         DocumentView.RequestRedraw();
                     }
-                    TestAlignment();
+                    //TestAlignment();
                     //TestUIElement();
+                    TestTable();
                 }
                 else goto default;
                 break;

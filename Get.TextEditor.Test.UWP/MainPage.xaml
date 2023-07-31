@@ -9,6 +9,7 @@
     mc:Ignorable="d"
     muxc:BackdropMaterial.ApplyToRootOrPageBackground="True"
     xmlns:editor="using:Get.TextEditor"
+    xmlns:para="using:Get.RichTextKit.Editor.Paragraphs"
     xmlns:helpers="using:Get.XAMLTools.UI.Helpers"
     xmlns:ui="using:Get.TextEditor.UWP.UI.Controls"
     >
@@ -23,6 +24,7 @@
                     <ui:ToggleMenuFlyoutItemEx Text="Underline" Icon="{helpers:SymbolExIcon Symbol=Underline}" StyleStatus="{x:Bind Editor.DocumentView.Selection.Underline, Mode=TwoWay}" Padding="5"/>
                 </MenuFlyout>
             </editor:RichTextEditor.ContextFlyout>
+            
         </editor:RichTextEditor>
         <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="16">
             <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="8" PointerPressed="HandleMouseEvent" PointerMoved="HandleMouseEvent" PointerEntered="HandleMouseEvent" PointerExited="HandleMouseEvent" PointerReleased="HandleMouseEvent">

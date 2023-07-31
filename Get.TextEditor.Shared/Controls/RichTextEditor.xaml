@@ -7,6 +7,11 @@
     IsTabStop="True"
     ManipulationMode="TranslateY,TranslateInertia"
 >
+    <UserControl.Resources>
+        <DataTemplate x:Name="EmptyTemplate">
+            <Grid IsHitTestVisible="False"/>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="12"/>
@@ -16,6 +21,12 @@
         <Grid Grid.Column="1">
             <local:RichTextEditorCanvas x:Name="EditorCanvas" DocumentView="{x:Bind DocumentView}"/>
             <local:RichTextEditorUICanvas x:Name="UICanvas"/>
+            <ContentPresenter
+                Translation="{x:Bind NegativeVector3(DocumentView.XScroll, DocumentView.YScroll), Mode=OneWay}"
+                x:Name="ParagraphSettingUIContentPresenter"
+                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                ContentTemplate="{x:Bind Select(UIConfigParagraphTemplateSelector, DocumentView.Selection.CurrentlyInteractingParagraph), Mode=OneWay}">
+            </ContentPresenter>
         </Grid>
         <ScrollBar
             IndicatorMode="MouseIndicator"
