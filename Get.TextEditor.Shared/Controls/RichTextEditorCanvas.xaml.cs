@@ -1,20 +1,19 @@
 ﻿#nullable enable
 using SkiaSharp.Views.UWP;
 using System.Numerics;
-using Windows.UI.Composition.Interactions;
 using Get.XAMLTools;
-using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Get.EasyCSharp;
-using Windows.UI.Xaml;
+
 using SkiaSharp;
-using Windows.UI.Xaml.Hosting;
 
 namespace Get.TextEditor;
 [DependencyProperty<DocumentView>("DocumentView", GenerateLocalOnPropertyChangedMethod = true)]
 [DependencyProperty<bool>("SelectionHandle", GenerateLocalOnPropertyChangedMethod = true)]
 sealed partial class RichTextEditorCanvas : SKSwapChainPanel
 {
+    internal bool ManipulationScrolled { get; set; } = false;
+    internal void ResetManipulationScrollTracker() => ManipulationScrolled = false;
     readonly ElementInteractionTracker tracker;
     public RichTextEditorCanvas()
     {
@@ -41,6 +40,7 @@ sealed partial class RichTextEditorCanvas : SKSwapChainPanel
         ActualThemeChanged += (_, _) => Invalidate();
         ManipulationDelta += (o, e) =>
         {
+            ManipulationScrolled = true;
             DocumentView.YScroll += (float)e.Delta.Translation.Y;
         };
     }

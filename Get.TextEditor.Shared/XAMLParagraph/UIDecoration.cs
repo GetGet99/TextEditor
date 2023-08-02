@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Linq;
-using Windows.UI.Xaml;
+
 using static Get.RichTextKit.Editor.Paragraphs.Paragraph;
 using VerticalAlignment = Get.RichTextKit.Editor.Paragraphs.Properties.Decoration.VerticalAlignment;
 

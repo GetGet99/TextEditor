@@ -2,10 +2,10 @@
 using SkiaSharp;
 using System.Collections.Generic;
 using Get.RichTextKit.Editor;
-using Windows.UI.Xaml;
+
 using System.Drawing;
 using Get.RichTextKit.Editor.Paragraphs;
-using Windows.UI.Xaml.Controls;
+
 using Get.RichTextKit.Styles;
 using Get.RichTextKit.Editor.Structs;
 using Get.RichTextKit;

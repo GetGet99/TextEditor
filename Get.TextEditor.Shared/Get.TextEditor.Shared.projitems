@@ -27,6 +27,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalUsing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\FocusHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)tools\TextEditorDetection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\CheckBoxDecoration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)XAMLParagraph\UIDecoration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Caret.xaml.cs" />

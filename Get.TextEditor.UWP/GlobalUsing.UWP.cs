@@ -1,0 +1,12 @@
+global using Platform = Windows;
+global using Windows.UI;
+global using Windows.UI.Xaml;
+global using Windows.UI.Xaml.Controls;
+global using Windows.UI.ViewManagement;
+global using Windows.Foundation;
+global using Windows.System;
+global using Windows.UI.Xaml.Input;
+global using Windows.UI.Text.Core;
+global using Windows.UI.Xaml.Hosting;
+global using Windows.UI.Composition.Interactions;
+global using Windows.UI.Xaml.Media;

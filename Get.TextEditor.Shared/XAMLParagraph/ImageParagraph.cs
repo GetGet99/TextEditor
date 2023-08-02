@@ -1,5 +1,5 @@
 ﻿//#nullable enable
-//using Windows.UI.Xaml.Media.Imaging;
+//using Platform.UI.Xaml.Media.Imaging;
 
 //namespace Get.TextEditor;
 

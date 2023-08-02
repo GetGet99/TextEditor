@@ -1,6 +1,4 @@
 using Get.RichTextKit.Editor;
-using Windows.UI.Xaml.Controls;
-using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Windows.ApplicationModel.DataTransfer;
 using System.Threading.Tasks;

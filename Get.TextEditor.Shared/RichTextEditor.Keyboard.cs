@@ -1,6 +1,6 @@
 using Windows.UI.Core;
-using Windows.System;
-using Windows.UI.Xaml.Controls;
+
+
 using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Editor;
@@ -18,6 +18,10 @@ partial class RichTextEditor : UserControl
     private void RichTextEditor_KeyDown(CoreWindow sender, KeyEventArgs e)
     {
         if (!HasFocus) return;
+        else if (FocusManager.GetFocusedElement(XamlRoot) != this)
+        {
+            Focus(FocusState.Keyboard);
+        }
         bool handled = true;
         switch (e.VirtualKey)
         {

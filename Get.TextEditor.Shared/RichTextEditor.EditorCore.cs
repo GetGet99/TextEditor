@@ -1,13 +1,21 @@
-using Windows.UI.Text.Core;
 using Get.RichTextKit;
-using Windows.System;
-using Windows.UI.Xaml.Controls;
+using System.Diagnostics;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
 {
     readonly CoreTextEditContext EditContext = CoreTextServicesManager.GetForCurrentView().CreateEditContext();
-    bool HasFocus;
+    bool _hasFocus;
+    bool HasFocus
+    {
+        get { return _hasFocus; }
+        set
+        {
+            //if (value is false)
+            //    Debugger.Break();
+            _hasFocus = value;
+        }
+    }
     void InitEditorCore()
     {
         EditContext.InputScope = CoreTextInputScope.Text;
@@ -62,7 +70,7 @@ partial class RichTextEditor : UserControl
         GotFocus += delegate
         {
             HasFocus = true;
-            //Focus(Windows.UI.Xaml.FocusState.Pointer);
+            //Focus(Platform.UI.Xaml.FocusState.Pointer);
             EditContext.NotifyFocusEnter();
         };
         DocumentView.Selection.RangeChanged += delegate
@@ -84,7 +92,7 @@ partial class RichTextEditor : UserControl
         //PointerPressed += delegate
         //{
         //    HasFocus = true;
-        //    Focus(Windows.UI.Xaml.FocusState.Pointer);
+        //    Focus(Platform.UI.Xaml.FocusState.Pointer);
         //    EditContext.NotifyFocusEnter();
         //};
     }

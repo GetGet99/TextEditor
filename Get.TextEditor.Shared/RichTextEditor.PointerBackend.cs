@@ -1,17 +1,5 @@
-#nullable enable
-using Get.RichTextKit;
-using Get.RichTextKit.Editor;
-using Windows.UI.Core;
-using Windows.UI.Xaml.Input;
-using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
-using System;
-using System.Diagnostics;
-using Windows.Devices.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml;
-
 namespace Get.TextEditor;
+using Platform.UI.Core;
 partial class RichTextEditor : UserControl
 {
     void InitPointerBackendHook()
@@ -22,6 +10,7 @@ partial class RichTextEditor : UserControl
         DateTime prevPointerPressed = DateTime.MinValue;
         EditorCanvas.PointerPressed += (_, e) =>
         {
+            EditorCanvas.ResetManipulationScrollTracker();
             HasFocus = true;
             Focus(FocusState.Programmatic);
             EditContext.NotifyFocusEnter();
@@ -29,7 +18,6 @@ partial class RichTextEditor : UserControl
             if (e.GetCurrentPoint(EditorCanvas).Properties.IsLeftButtonPressed)
             {
                 pressed = true;
-
                 EditorCanvas.SelectionHandle = ShouldShowHandle(e.Pointer.PointerDeviceType);
                 if (ShouldManipulationScroll(e.Pointer.PointerDeviceType))
                     return;
@@ -38,11 +26,13 @@ partial class RichTextEditor : UserControl
         };
         EditorCanvas.PointerReleased += (_, e) =>
         {
-            if (!pressed || !moved) goto End;
-            if (ShouldManipulationScroll(e.Pointer.PointerDeviceType))
+            if (!pressed) goto End;
+            if (!EditorCanvas.ManipulationScrolled && ShouldManipulationScroll(e.Pointer.PointerDeviceType))
+            {
                 PointerDoPressed(e);
+            }
             VirtualizedPointerReleased(e);
-            End:
+        End:
             moved = false;
             pressed = false;
         };
@@ -69,19 +59,17 @@ partial class RichTextEditor : UserControl
         };
         CoreWindow.GetForCurrentThread().PointerPressed += (o, e) =>
         {
-            static Rect GetElementRect(FrameworkElement element)
+            var ele = VisualTreeHelper.FindElementsInHostCoordinates(e.CurrentPoint.Position, XamlRoot.Content).FirstOrDefault();
+            if (ele != EditorCanvas)
             {
-                GeneralTransform transform = element.TransformToVisual(null);
-                Point point = transform.TransformPoint(new Point());
-                return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
+                //HasFocus = false;
+                //EditContext.NotifyFocusLeave();
             }
-            // See whether the pointer is inside or outside the control.
-            Rect contentRect = GetElementRect(this);
-            if (!contentRect.Contains(e.CurrentPoint.Position))
-            {
-                HasFocus = false;
-                EditContext.NotifyFocusLeave();
-            }
+        };
+        CoreWindow.GetForCurrentThread().PointerMoved += (o, e) =>
+        {
+            var ele = VisualTreeHelper.FindElementsInHostCoordinates(e.CurrentPoint.Position, XamlRoot.Content).FirstOrDefault();
+            IsCursorInside = ReferenceEquals(ele, EditorCanvas);
         };
     }
 }

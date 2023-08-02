@@ -1,19 +1,13 @@
 using Get.RichTextKit.Editor;
-using Windows.UI.Core;
-using Windows.System;
-using Windows.UI.Xaml.Controls;
-using System;
-using StyleStatus = Get.RichTextKit.Editor.StyleStatus;
 using Get.RichTextKit.Editor.Paragraphs;
-using System.Linq;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
-using Get.RichTextKit;
-using UITextBlock = Windows.UI.Xaml.Controls.TextBlock;
 using Get.RichTextKit.Editor.Paragraphs.Properties.Decoration;
 using Get.TextEditor.UWP.Decoration;
 using DecorationVerticalAlignment = Get.RichTextKit.Editor.Paragraphs.Properties.Decoration.VerticalAlignment;
 
 namespace Get.TextEditor;
+using Platform.UI.Core;
+using RTKTextAlignment = RichTextKit.TextAlignment;
 partial class RichTextEditor
 {
     public AllowedFormatting AllowedShortcutFormatting { get; set; } = new(defaultValue: true);
@@ -52,14 +46,14 @@ partial class RichTextEditor
                     //{
                     //    var ele = new Button { Content = "Test", Flyout = new Flyout { Content = new UITextBlock { Text = "Hi" } } };
                     //    //var ele = new CheckBox { MinWidth = 0, MinHeight = 0, Padding = default };
-                    //    ele.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
+                    //    ele.VerticalAlignment = Platform.UI.Xaml.VerticalAlignment.Top;
                     //    InsertUIFrameworkElement(ele);
                     //}
                     void TestUIElement()
                     {
                         static Button Factory()
                         {
-                            var ele = new Button { Content = "My Button", Flyout = new Flyout { Content = new UITextBlock { Text = "UIElement Support Is (Almost) Back" }, ShouldConstrainToRootBounds = false } };
+                            var ele = new Button { Content = "My Button", Flyout = new Flyout { Content = new TextBlock { Text = "UIElement Support Is (Almost) Back" }, ShouldConstrainToRootBounds = false } };
                             return ele;
                         }
                         InsertUIElement(new UIElementSimpleFactory<Button>(Factory));
@@ -144,18 +138,18 @@ partial class RichTextEditor
                     if (IsKeyDown(VirtualKey.Shift))
                         DocumentView.Selection.ParagraphSettings.HasBulletListDecoration = DocumentView.Selection.ParagraphSettings.HasBulletListDecoration.Toggle();
                     else
-                        DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Left;
+                        DocumentView.Selection.ParagraphSettings.TextAlignment = RTKTextAlignment.Left;
                 }
                 else goto default;
                 break;
             case VirtualKey.E:
                 if (IsKeyDown(VirtualKey.Control))
-                    DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Center;
+                    DocumentView.Selection.ParagraphSettings.TextAlignment = RTKTextAlignment.Center;
                 else goto default;
                 break;
             case VirtualKey.R:
                 if (IsKeyDown(VirtualKey.Control))
-                    DocumentView.Selection.ParagraphSettings.TextAlignment = TextAlignment.Right;
+                    DocumentView.Selection.ParagraphSettings.TextAlignment = RTKTextAlignment.Right;
                 else goto default;
                 break;
             case (VirtualKey)0xBB: // OEM + or = key
@@ -223,17 +217,6 @@ partial class RichTextEditor
                 break;
         }
         e.Handled = handled;
-    }
-    static TextAlignment AlignmentGetter(Paragraph p)
-        => p is IAlignableParagraph ap ? ap.Alignment : default;
-    static bool AlignmentSetter(Paragraph p, TextAlignment x)
-    {
-        if (p is IAlignableParagraph ap)
-        {
-            ap.Alignment = x;
-            return true;
-        }
-        return false;
     }
 }
 static partial class Extension

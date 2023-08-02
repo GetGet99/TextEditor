@@ -1,4 +1,5 @@
 ﻿using Get.EasyCSharp;
+using Get.TextEditor.Tools;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -11,6 +12,7 @@ public sealed partial class MainPage : Page
     {
         InitializeComponent();
         Editor.UIConfigParagraphTemplateSelector = new UIParagraphSettingTemplate().GetDataTemplateSelector();
+        Editor.FocusHandler = new InteractingOrInsideFocusHandler() { Element = Grid1 };
     }
     [Event<RoutedEventHandler>]
     void Undo()

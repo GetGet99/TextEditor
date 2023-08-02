@@ -1,17 +1,13 @@
 #nullable enable
 using Get.RichTextKit;
 using Get.RichTextKit.Editor;
-using Windows.UI.Core;
-using Windows.UI.Xaml.Input;
-using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
-using System;
-using System.Diagnostics;
 using Windows.Devices.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml;
+
+using Microsoft.Toolkit.Uwp.UI;
 
 namespace Get.TextEditor;
+using Platform.UI.Core;
+using Platform.UI.Xaml.Input;
 partial class RichTextEditor : UserControl
 {
     void InitPointerHook()
@@ -77,7 +73,7 @@ partial class RichTextEditor : UserControl
         {
             ContextFlyoutShowing?.Invoke(this, new());
             ContextFlyout.ShowAt(this, new() {
-                Placement = Windows.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedLeft,
+                Placement = Platform.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedLeft,
                 Position = pt.Position
             });
         }
@@ -93,11 +89,12 @@ partial class RichTextEditor : UserControl
             _isCursorInside = value;
             if (value)
             {
-                oldPointer = CoreWindow.GetForCurrentThread().PointerCursor;
-                CoreWindow.GetForCurrentThread().PointerCursor = new CoreCursor(CoreCursorType.IBeam, 0);
+                //oldPointer = CoreWindow.GetForCurrentThread().PointerCursor;
+                //CoreWindow.GetForCurrentThread().PointerCursor = new CoreCursor(CoreCursorType.IBeam, 0);
             } else
             {
-                CoreWindow.GetForCurrentThread().PointerCursor = oldPointer;
+                //if (oldPointer?.Type is not CoreCursorType.IBeam)
+                //    CoreWindow.GetForCurrentThread().PointerCursor = oldPointer;
             }
         }
     }
@@ -105,7 +102,15 @@ partial class RichTextEditor : UserControl
     {
         var point = e.GetCurrentPoint(this);
         var hitTest = HitTest(point.Position);
-        IsCursorInside = hitTest.IsHit();
+        if (hitTest.IsHit())
+        {
+            FrameworkElementExtensions.SetCursor(this, CoreCursorType.IBeam);
+            Window.Current.CoreWindow.PointerCursor = new(CoreCursorType.IBeam, default);
+        } else
+        {
+            FrameworkElementExtensions.SetCursor(this, CoreCursorType.Arrow);
+            Window.Current.CoreWindow.PointerCursor = new(CoreCursorType.Arrow, default);
+        }
         if (IsHolding && point.IsInContact && point.Properties.IsLeftButtonPressed)
         {
             DocumentView.Controller.Select(new(SelectionStart.CodePointIndex, hitTest.ClosestCodePointIndex, hitTest.AltCaretPosition));

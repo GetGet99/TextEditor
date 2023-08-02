@@ -1,6 +1,8 @@
-﻿using Get.RichTextKit.Editor.DocumentView;
+﻿using Get.RichTextKit.Editor;
+using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Editor.Paragraphs;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
+using Get.RichTextKit.Editor.UndoUnits;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
@@ -29,6 +31,10 @@ public sealed partial class UIParagraphSettingTemplate : Page
         {
             switch (item)
             {
+                case TextParagraph para:
+                    if (para.TextBlock.Length is 1 && para.GetText(0, 1)[0] is Document.NewParagraphSeparator)
+                        return Parent.EmptyTextParagraph;
+                    goto default;
                 case TableParagraph _:
                     return Parent.TableParagraph;
                 default:
@@ -39,6 +45,16 @@ public sealed partial class UIParagraphSettingTemplate : Page
         {
             return SelectTemplateCore(item);
         }
+    }
+
+    private void ConfirmTableCreation(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn) return;
+        if (btn.Tag is not Paragraph para) return;
+        if (para.Owner is not { } document) return;
+        var (parent, index) = para.ParentInfo;
+        var style = para.StartStyle;
+        document.Paragraphs[para.GlobalParagraphIndex] = new TableParagraph(style, 3, 3);
     }
 }
 static class XAMLHelper

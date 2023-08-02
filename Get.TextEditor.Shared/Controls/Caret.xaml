@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI"
     mc:Ignorable="d"
     Translation="{x:Bind MainTranslation(CaretRect), Mode=OneWay}"
     Visibility="Collapsed"
@@ -33,11 +34,12 @@
             ManipulationStarted="HandleManipulationStarted"
             ManipulationDelta="HandleManipulationDelta"
             ManipulationCompleted="HandleManipulationCompleted"
-            PointerEntered="GridPoitnerEnter" PointerExited="GridPoitnerLeave"
             PointerPressed="CancelPointerEvent" PointerMoved="CancelPointerEvent"
             PointerReleased="CancelPointerEvent2"
+            toolkit:FrameworkElementExtensions.Cursor="SizeAll"
         >
-
+            <!---->
+            <!--PointerEntered="GridPoitnerEnter" PointerExited="GridPoitnerLeave"-->
         </Ellipse>
         <Grid.TranslationTransition>
             <Vector3Transition Duration="0:0:0.1"/>

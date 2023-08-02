@@ -1,17 +1,12 @@
 ﻿using SkiaSharp;
-using System.Collections.Generic;
-using Get.RichTextKit.Editor;
 using Get.RichTextKit;
-using Windows.UI.Xaml;
+
 using SkiaSharp.Views.UWP;
 using Style = Get.RichTextKit.Style;
-using System.Drawing;
 using Get.RichTextKit.Utils;
-using Get.RichTextKit.Editor.Paragraphs;
 using System.Numerics;
-using System;
 using Get.RichTextKit.Styles;
-
+using TextBlock = Get.RichTextKit.TextBlock;
 namespace Get.TextEditor;
 
 internal class FrameworkElementRun : StyledText

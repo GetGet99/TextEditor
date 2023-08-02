@@ -1,11 +1,10 @@
-using Windows.UI.ViewManagement;
 using SkiaSharp.Views.UWP;
-using Windows.UI.Xaml.Controls;
+
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Styles;
-using Get.RichTextKit;
 
 namespace Get.TextEditor;
+using Style = RichTextKit.Style;
 partial class RichTextEditor : UserControl
 {
     static readonly IStyle DefaultStyle = new Style()

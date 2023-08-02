@@ -1,6 +1,4 @@
-﻿using Windows.UI.ViewManagement;
-
-namespace Get.TextEditor;
+﻿namespace Get.TextEditor;
 
 static class Constants
 {

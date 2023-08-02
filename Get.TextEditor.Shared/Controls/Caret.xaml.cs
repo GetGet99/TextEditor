@@ -4,10 +4,10 @@ using System.Numerics;
 using Get.RichTextKit.Editor.DocumentView;
 using System.ComponentModel;
 using Get.EasyCSharp;
-using Windows.UI.Xaml;
+
 using System;
-using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
+
+
 using Windows.UI.Core;
 
 namespace Get.TextEditor;
@@ -26,30 +26,30 @@ public sealed partial class Caret : INotifyPropertyChanged
         };
     }
     CoreCursor? oldCursor;
-    void GridPoitnerEnter(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        oldCursor = CoreWindow.GetForCurrentThread().PointerCursor;
-        CoreWindow.GetForCurrentThread().PointerCursor = new(CoreCursorType.SizeAll, default);
-    }
-    void GridPoitnerLeave(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        CoreWindow.GetForCurrentThread().PointerCursor = oldCursor;
-    }
-    private void CancelPointerEvent(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+    //void GridPoitnerEnter(object sender, Platform.UI.Xaml.Input.PointerRoutedEventArgs e)
+    //{
+    //    oldCursor = CoreWindow.GetForCurrentThread().PointerCursor;
+    //    CoreWindow.GetForCurrentThread().PointerCursor = new(CoreCursorType.SizeAll, default);
+    //}
+    //void GridPoitnerLeave(object sender, Platform.UI.Xaml.Input.PointerRoutedEventArgs e)
+    //{
+    //    CoreWindow.GetForCurrentThread().PointerCursor = oldCursor;
+    //}
+    private void CancelPointerEvent(object sender, Platform.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         if (sender is Grid && e.Pointer.PointerDeviceType is not Windows.Devices.Input.PointerDeviceType.Touch)
             return;
         e.Handled = true;
     }
 
-    private void CancelPointerEvent2(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void CancelPointerEvent2(object sender, Platform.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         if (sender is Grid && e.Pointer.PointerDeviceType is not Windows.Devices.Input.PointerDeviceType.Touch)
             return; 
         e.Handled = true;
     }
     Point? handleDragStart;
-    private void HandleManipulationStarted(object sender, Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
+    private void HandleManipulationStarted(object sender, Platform.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
     {
         if (sender is Grid && e.PointerDeviceType is not Windows.Devices.Input.PointerDeviceType.Touch)
             return;
@@ -58,7 +58,7 @@ public sealed partial class Caret : INotifyPropertyChanged
         TranslationTransition = null;
     }
 
-    private void HandleManipulationDelta(object sender, Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
+    private void HandleManipulationDelta(object sender, Platform.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
     {
         if (sender is Grid && e.PointerDeviceType is not Windows.Devices.Input.PointerDeviceType.Touch)
             return;
@@ -82,7 +82,7 @@ public sealed partial class Caret : INotifyPropertyChanged
         }
         CaretRect = new(pt, new Size(CaretRect.Width, CaretRect.Height));
     }
-    private void HandleManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
+    private void HandleManipulationCompleted(object sender, Platform.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
     {
         if (sender is Grid touchHitTest && e.PointerDeviceType is not Windows.Devices.Input.PointerDeviceType.Touch)
             return;
