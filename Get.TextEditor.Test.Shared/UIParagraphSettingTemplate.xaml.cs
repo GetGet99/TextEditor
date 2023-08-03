@@ -2,15 +2,16 @@
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Editor.Paragraphs;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
-using Get.RichTextKit.Editor.UndoUnits;
+using Get.TextEditor;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
-namespace TryRichText.UWP;
+namespace TryRichText.Shared;
 
 public sealed partial class UIParagraphSettingTemplate : Page
 {
@@ -52,9 +53,44 @@ public sealed partial class UIParagraphSettingTemplate : Page
         if (sender is not Button btn) return;
         if (btn.Tag is not Paragraph para) return;
         if (para.Owner is not { } document) return;
-        var (parent, index) = para.ParentInfo;
         var style = para.StartStyle;
         document.Paragraphs[para.GlobalParagraphIndex] = new TableParagraph(style, 3, 3);
+    }
+
+    private async void AddImage(object sender, RoutedEventArgs e)
+    {
+        FileOpenPicker picker = new()
+        {
+            ViewMode = PickerViewMode.Thumbnail,
+            SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+            FileTypeFilter = { ".jpg", ".jpeg", ".png" },
+            CommitButtonText = "Insert"
+        };
+        StorageFile file = await picker.PickSingleFileAsync();
+        if (file != null)
+        {
+            if (sender is not Button btn) return;
+            if (btn.Tag is not Paragraph para) return;
+            if (para.Owner is not { } document) return;
+            if (GetParent(btn).FirstOrDefault(x => x is IDocumentViewOwner) is not IDocumentViewOwner parentEditor) return;
+            var style = para.StartStyle;
+            var stream = await file.OpenReadAsync();
+            var img = new BitmapImage();
+            img.SetSource(stream);
+            document.Paragraphs[para.GlobalParagraphIndex] = new ImageParagraph(
+                style,
+                parentEditor,
+                img
+            );
+        }
+    }
+    IEnumerable<DependencyObject> GetParent(DependencyObject element)
+    {
+        while (element is not null)
+        {
+            yield return element;
+            element = VisualTreeHelper.GetParent(element);
+        }
     }
 }
 static class XAMLHelper

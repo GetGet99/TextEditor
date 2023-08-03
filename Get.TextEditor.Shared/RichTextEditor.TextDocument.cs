@@ -1,4 +1,3 @@
-using SkiaSharp.Views.UWP;
 
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Styles;

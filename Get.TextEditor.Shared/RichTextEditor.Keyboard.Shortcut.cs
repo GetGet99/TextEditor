@@ -2,20 +2,31 @@ using Get.RichTextKit.Editor;
 using Get.RichTextKit.Editor.Paragraphs;
 using Get.RichTextKit.Editor.Paragraphs.Panel;
 using Get.RichTextKit.Editor.Paragraphs.Properties.Decoration;
-using Get.TextEditor.UWP.Decoration;
+using Get.TextEditor.Shared.Decoration;
 using DecorationVerticalAlignment = Get.RichTextKit.Editor.Paragraphs.Properties.Decoration.VerticalAlignment;
 
 namespace Get.TextEditor;
-using Platform.UI.Core;
+#if WINDOWS_UWP
+using Windows.UI.Core;
+#endif
 using RTKTextAlignment = RichTextKit.TextAlignment;
 partial class RichTextEditor
 {
     public AllowedFormatting AllowedShortcutFormatting { get; set; } = new(defaultValue: true);
+#if WINDOWS_UWP
     private void HandleShortcut(CoreWindow sender, KeyEventArgs e)
     {
+        VirtualKey VirtualKeyOf(KeyEventArgs e)
+            => e.VirtualKey;
+#else
+    private void HandleShortcut(object sender, KeyRoutedEventArgs e)
+    {
+        VirtualKey VirtualKeyOf(KeyRoutedEventArgs e)
+            => e.Key;
+#endif
         if (!HasFocus) return;
         bool handled = true;
-        switch (e.VirtualKey)
+        switch (VirtualKeyOf(e))
         {
             case VirtualKey.C:
                 if (IsKeyDown(VirtualKey.Control))

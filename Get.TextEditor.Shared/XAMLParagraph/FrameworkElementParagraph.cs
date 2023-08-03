@@ -87,7 +87,7 @@ interface IUIElementFactory<T> : IUIElementFactory where T : UIElement
 {
     T GetElement(IDocumentViewOwner? view);
 }
-internal partial class UIElementParagraph : Paragraph, IAlignableParagraph
+public partial class UIElementParagraph : Paragraph, IAlignableParagraph
 {
     readonly IUIElementFactory UIElementFactory;
     UIElement FirstControl;
@@ -96,12 +96,14 @@ internal partial class UIElementParagraph : Paragraph, IAlignableParagraph
         InternalStyle = style;
         UIElementFactory = factory;
         FirstControl = UIElementFactory.GetUIElement(MainView);
+        if (FirstControl is FrameworkElement ele)
+            ele.SizeChanged += delegate { Owner?.Layout.InvalidateAndValid(); Owner?.RequestRedraw(); };
     }
     IStyle InternalStyle { get; set; }
     public override IStyle StartStyle => InternalStyle;
     public override IStyle EndStyle => InternalStyle;
 
-    public override int CodePointLength => 1;
+    public override int CodePointLength => 3;
 
     public override int LineCount => 1;
 
@@ -308,7 +310,7 @@ internal partial class UIElementParagraph : Paragraph, IAlignableParagraph
         {
             if (selection.Start > StartCaretPosition.CodePointIndex)
             {
-                selection.EndCaretPosition = EndCaretPosition;
+                selection.EndCaretPosition = StartCaretPosition;
                 if (!keepSelection) selection.Start = selection.End;
                 newSelection = selection;
                 return NavigationStatus.Success;

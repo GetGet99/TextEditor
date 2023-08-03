@@ -9,12 +9,12 @@ using System.ComponentModel;
 namespace Get.TextEditor;
 using Platform.UI.Xaml.Media.Imaging;
 
-[DependencyProperty<double>("MinImageWidth", DefaultValueExpression = "100", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
-[DependencyProperty<double>("MinImageHeight", DefaultValueExpression = "100", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
-[DependencyProperty<double>("MaxImageWidth", DefaultValueExpression = "500", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
-[DependencyProperty<double>("MaxImageHeight", DefaultValueExpression = "500", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
+[DependencyProperty<double>("MinImageWidth", DefaultValueExpression = "100d", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
+[DependencyProperty<double>("MinImageHeight", DefaultValueExpression = "100d", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
+[DependencyProperty<double>("MaxImageWidth", DefaultValueExpression = "700d", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
+[DependencyProperty<double>("MaxImageHeight", DefaultValueExpression = "700d", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
 [DependencyProperty<BitmapImage>("ImageSource", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
-[DependencyProperty<double>("ImageScale", DefaultValueExpression = "1", LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
+[DependencyProperty<double>("ImageScale", DefaultValueExpression = "1d", LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(EnsureScale))]
 public sealed partial class ImageDisplay : Grid, INotifyPropertyChanged
 {
     public ImageDisplay()

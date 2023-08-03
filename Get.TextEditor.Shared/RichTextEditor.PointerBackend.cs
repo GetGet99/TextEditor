@@ -1,5 +1,5 @@
 namespace Get.TextEditor;
-using Platform.UI.Core;
+
 partial class RichTextEditor : UserControl
 {
     void InitPointerBackendHook()
@@ -57,19 +57,14 @@ partial class RichTextEditor : UserControl
             if (ShouldManipulationScroll(e.Pointer.PointerDeviceType)) return;
             VirtualizedPointerMoved(e, pressed);
         };
-        CoreWindow.GetForCurrentThread().PointerPressed += (o, e) =>
-        {
-            var ele = VisualTreeHelper.FindElementsInHostCoordinates(e.CurrentPoint.Position, XamlRoot.Content).FirstOrDefault();
-            if (ele != EditorCanvas)
-            {
-                //HasFocus = false;
-                //EditContext.NotifyFocusLeave();
-            }
-        };
-        CoreWindow.GetForCurrentThread().PointerMoved += (o, e) =>
-        {
-            var ele = VisualTreeHelper.FindElementsInHostCoordinates(e.CurrentPoint.Position, XamlRoot.Content).FirstOrDefault();
-            IsCursorInside = ReferenceEquals(ele, EditorCanvas);
-        };
+        //CoreWindow.GetForCurrentThread().PointerPressed += (o, e) =>
+        //{
+        //    var ele = VisualTreeHelper.FindElementsInHostCoordinates(e.CurrentPoint.Position, XamlRoot.Content).FirstOrDefault();
+        //    if (ele != EditorCanvas)
+        //    {
+        //        //HasFocus = false;
+        //        //EditContext.NotifyFocusLeave();
+        //    }
+        //};
     }
 }

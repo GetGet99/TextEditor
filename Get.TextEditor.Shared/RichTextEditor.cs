@@ -16,5 +16,6 @@ public partial class RichTextEditor : UserControl
         InitKeyboardHook();
         // Intentionally update property
         DocumentView.Selection.Range = DocumentView.Selection.Range;
+        DocumentView.OwnerDocument.Layout.InvalidateAndValid();
     }
 }

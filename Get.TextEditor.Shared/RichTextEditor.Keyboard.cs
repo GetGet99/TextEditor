@@ -1,6 +1,3 @@
-using Windows.UI.Core;
-
-
 using System;
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Editor;
@@ -11,19 +8,33 @@ partial class RichTextEditor : UserControl
 {
     void InitKeyboardHook()
     {
+#if WINDOWS_UWP
         CoreWindow.GetForCurrentThread().KeyDown += RichTextEditor_KeyDown;
+#else
+        KeyDown += RichTextEditor_KeyDown;
+#endif
     }
+
     static bool IsKeyDown(VirtualKey key)
-        => (CoreWindow.GetForCurrentThread().GetKeyState(key) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+        => PlatformLibrary.IsKeyDown(key);
+#if WINDOWS_UWP
     private void RichTextEditor_KeyDown(CoreWindow sender, KeyEventArgs e)
     {
+        VirtualKey VirtualKeyOf(KeyEventArgs e)
+            => e.VirtualKey;
+#else
+    private void RichTextEditor_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        VirtualKey VirtualKeyOf(KeyRoutedEventArgs e)
+            => e.Key;
+#endif
         if (!HasFocus) return;
-        else if (FocusManager.GetFocusedElement(XamlRoot) != this)
+        else if ((DependencyObject)FocusManager.GetFocusedElement(XamlRoot) != this)
         {
             Focus(FocusState.Keyboard);
         }
         bool handled = true;
-        switch (e.VirtualKey)
+        switch (VirtualKeyOf(e))
         {
             case VirtualKey.Back:
                 DocumentView.Controller.Delete();
@@ -36,7 +47,7 @@ partial class RichTextEditor : UserControl
             case VirtualKey.Up:
             case VirtualKey.Down:
                 DocumentView.Controller.MoveCaret(
-                    e.VirtualKey switch
+                    VirtualKeyOf(e) switch
                     {
                         VirtualKey.Left => Direction.Left,
                         VirtualKey.Right => Direction.Right,
@@ -65,7 +76,7 @@ partial class RichTextEditor : UserControl
             case VirtualKey.PageUp:
             case VirtualKey.PageDown:
                 DocumentView.Controller.MoveCaret(
-                    e.VirtualKey switch
+                    VirtualKeyOf(e) switch
                     {
                         VirtualKey.Home => IsKeyDown(VirtualKey.Control) ? SpacialCaretMovement.CtrlHome : SpacialCaretMovement.Home,
                         VirtualKey.End => IsKeyDown(VirtualKey.Control) ? SpacialCaretMovement.CtrlEnd : SpacialCaretMovement.End,

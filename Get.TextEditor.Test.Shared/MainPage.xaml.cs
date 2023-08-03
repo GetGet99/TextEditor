@@ -1,18 +1,18 @@
 ﻿using Get.EasyCSharp;
 using Get.TextEditor.Tools;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
-namespace TryRichText.UWP;
+namespace TryRichText.Shared;
 
 public sealed partial class MainPage : Page
 {
     public MainPage()
     {
         InitializeComponent();
+#if WINDOWS_UWP
+        BackdropMaterial.SetApplyToRootOrPageBackground(this, true);
+#endif
         Editor.UIConfigParagraphTemplateSelector = new UIParagraphSettingTemplate().GetDataTemplateSelector();
-        Editor.FocusHandler = new InteractingOrInsideFocusHandler() { Element = Grid1 };
+        Editor.FocusHandler = new InteractingElementFocusHandler() { Element = Grid1 };
     }
     [Event<RoutedEventHandler>]
     void Undo()

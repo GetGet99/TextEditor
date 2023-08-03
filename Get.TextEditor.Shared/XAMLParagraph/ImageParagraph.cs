@@ -1,22 +1,24 @@
-﻿//#nullable enable
-//using Platform.UI.Xaml.Media.Imaging;
+﻿#nullable enable
 
-//namespace Get.TextEditor;
+using Get.RichTextKit.Editor.DocumentView;
+using Get.RichTextKit.Styles;
 
-//class ImageParagraph : FrameworkElementParagraph
-//{
-//    ImageDisplay? ImageDisplay;
-//    public ImageParagraph(RichTextEditorCanvas owner, BitmapImage img) : base(owner, new ImageDisplay().Assign(out var imD))
-//    {
-//        ImageDisplay = imD;
-//        ImageDisplay.ImageSource = img;
-//    }
-//}
-//static partial class Extension
-//{
-//    public static T Assign<T>(this T valIn, out T value)
-//    {
-//        value = valIn;
-//        return valIn;
-//    }
-//}
+namespace Get.TextEditor;
+
+public class ImageParagraph : UIElementParagraph
+{
+    ImageDisplay? ImageDisplay;
+    public ImageParagraph(IStyle style, IDocumentViewOwner owner, BitmapImage img) : base(style,
+        new UIElementSimpleFactory<ImageDisplay>(x => new ImageDisplay() { ImageSource = img }), owner)
+    {
+
+    }
+}
+static partial class Extension
+{
+    public static T Assign<T>(this T valIn, out T value)
+    {
+        value = valIn;
+        return valIn;
+    }
+}

@@ -3,11 +3,13 @@ using Get.RichTextKit;
 using Get.RichTextKit.Editor;
 using Windows.Devices.Input;
 
-using Microsoft.Toolkit.Uwp.UI;
+
 
 namespace Get.TextEditor;
-using Platform.UI.Core;
+
 using Platform.UI.Xaml.Input;
+using Windows.Foundation.Metadata;
+
 partial class RichTextEditor : UserControl
 {
     void InitPointerHook()
@@ -73,43 +75,33 @@ partial class RichTextEditor : UserControl
         {
             ContextFlyoutShowing?.Invoke(this, new());
             ContextFlyout.ShowAt(this, new() {
-                Placement = Platform.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedLeft,
+                Placement = FlyoutPlacementMode.TopEdgeAlignedLeft,
                 Position = pt.Position
             });
         }
     }
     public event RoutedEventHandler? ContextFlyoutShowing;
-    CoreCursor? oldPointer;
-    bool _isCursorInside = false;
-    bool IsCursorInside
+    PlatformCursor? oldPointer;
+    void SetCursor(PlatformCursorType type)
     {
-        set
-        {
-            if (value == _isCursorInside) return;
-            _isCursorInside = value;
-            if (value)
-            {
-                //oldPointer = CoreWindow.GetForCurrentThread().PointerCursor;
-                //CoreWindow.GetForCurrentThread().PointerCursor = new CoreCursor(CoreCursorType.IBeam, 0);
-            } else
-            {
-                //if (oldPointer?.Type is not CoreCursorType.IBeam)
-                //    CoreWindow.GetForCurrentThread().PointerCursor = oldPointer;
-            }
-        }
+#if WINDOWS_UWP
+        FrameworkElementExtensions.SetCursor(this, PlatformCursorType.IBeam);
+        Window.Current.CoreWindow.PointerCursor = new(PlatformCursorType.IBeam, default);
+#else
+        ProtectedCursor = InputSystemCursor.Create(type);
+#endif
     }
+
     private void VirtualizedPointerMoved(PointerRoutedEventArgs e, bool IsHolding)
     {
         var point = e.GetCurrentPoint(this);
         var hitTest = HitTest(point.Position);
         if (hitTest.IsHit())
         {
-            FrameworkElementExtensions.SetCursor(this, CoreCursorType.IBeam);
-            Window.Current.CoreWindow.PointerCursor = new(CoreCursorType.IBeam, default);
+            SetCursor(PlatformCursorType.IBeam);
         } else
         {
-            FrameworkElementExtensions.SetCursor(this, CoreCursorType.Arrow);
-            Window.Current.CoreWindow.PointerCursor = new(CoreCursorType.Arrow, default);
+            SetCursor(PlatformCursorType.Arrow);
         }
         if (IsHolding && point.IsInContact && point.Properties.IsLeftButtonPressed)
         {

@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using SkiaSharp.Views.UWP;
 using System.Numerics;
 using Get.XAMLTools;
 using Get.RichTextKit.Editor.DocumentView;
@@ -10,7 +9,7 @@ using SkiaSharp;
 namespace Get.TextEditor;
 [DependencyProperty<DocumentView>("DocumentView", GenerateLocalOnPropertyChangedMethod = true)]
 [DependencyProperty<bool>("SelectionHandle", GenerateLocalOnPropertyChangedMethod = true)]
-sealed partial class RichTextEditorCanvas : SKSwapChainPanel
+sealed partial class RichTextEditorCanvas : PlatformSKSwapChainPanel
 {
     internal bool ManipulationScrolled { get; set; } = false;
     internal void ResetManipulationScrollTracker() => ManipulationScrolled = false;

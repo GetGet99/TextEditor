@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
-using Windows.UI.Xaml.Controls.Primitives;
 
 namespace Get.TextEditor.Tools;
 public abstract class FocusHandler<T> where T : UIElement
 {
+#if WINDOWS_UWP
     public bool ShouldKeepFocus(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
+#else
+    public bool ShouldKeepFocus(T context, DependencyObject newFocusElement)
+#endif
     {
         bool disallowTakingFocus = false;
         if (newFocusElement is Popup && !GetParent(context).Contains(newFocusElement))
@@ -38,7 +41,11 @@ public abstract class FocusHandler<T> where T : UIElement
             }
         }
     OverriddenLogic:
+#if WINDOWS_UWP
         bool ret = ShouldKeepFocusOverride(context, positionRelativeToWindow, newFocusElement);
+#else
+        bool ret = ShouldKeepFocusOverride(context, newFocusElement);
+#endif
         if (disallowTakingFocus && ret)
         {
             // So we do need the element to return the focus
@@ -55,7 +62,12 @@ public abstract class FocusHandler<T> where T : UIElement
         }
         return ret;
     }
+#if WINDOWS_UWP
     protected abstract bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement);
+#else
+    protected abstract bool ShouldKeepFocusOverride(T context, DependencyObject newFocusElement);
+#endif
+#if WINDOWS_UWP
     protected static bool IsPointerOn(UIElement element, Point positionRelativeToWindow)
         => VisualTreeHelper.FindElementsInHostCoordinates(
             positionRelativeToWindow,
@@ -66,7 +78,8 @@ public abstract class FocusHandler<T> where T : UIElement
             positionRelativeToWindow,
             Window.Current.Content
         ).FirstOrDefault() == element;
-    IEnumerable<DependencyObject> GetParent(DependencyObject element)
+#endif
+    protected static IEnumerable<DependencyObject> GetParent(DependencyObject element)
     {
         while (element is not null)
         {
@@ -75,8 +88,9 @@ public abstract class FocusHandler<T> where T : UIElement
         }
     }
 }
-public class InteractingOnlyFocusHandler : InteractingOnlyFocusHandler<RichTextEditor> { }
-public class InteractingOnlyFocusHandler<T> : FocusHandler<T> where T : UIElement
+#if WINDOWS_UWP
+public class PointerInteractingOnlyFocusHandler : InteractingContextOnlyFocusHandler<RichTextEditor> { }
+public class PointerInteractingOnlyFocusHandler<T> : FocusHandler<T> where T : UIElement
 {
     protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
         => IsPointerDirectlyOn(context, positionRelativeToWindow);
@@ -94,9 +108,46 @@ public class InteractingOrInsideContextFocusHandler<T> : FocusHandler<T> where T
     protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
         => IsPointerOn(context, positionRelativeToWindow);
 }
-public class AlwyasInFocusHandler : InteractingOrInsideContextFocusHandler<RichTextEditor> { }
+#endif
+public class InteractingContextOnlyFocusHandler : InteractingContextOnlyFocusHandler<RichTextEditor> { }
+public class InteractingContextOnlyFocusHandler<T> : FocusHandler<T> where T : UIElement
+{
+#if WINDOWS_UWP
+    protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
+#else
+    protected override bool ShouldKeepFocusOverride(T context, DependencyObject newFocusElement)
+#endif
+        => context == newFocusElement;
+}
+public class InteractingElementFocusHandler : InteractingElementFocusHandler<RichTextEditor> { }
+public class InteractingElementFocusHandler<T> : FocusHandler<T> where T : UIElement
+{
+    public virtual UIElement Element { get; set; }
+#if WINDOWS_UWP
+    protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
+#else
+    protected override bool ShouldKeepFocusOverride(T context, DependencyObject newFocusElement)
+#endif
+        => GetParent(newFocusElement).Contains(Element);
+}
+public class InteractingContextFocusHandler : InteractingContextFocusHandler<RichTextEditor> { }
+public class InteractingContextFocusHandler<T> : FocusHandler<T> where T : UIElement
+{
+#if WINDOWS_UWP
+    protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
+#else
+    protected override bool ShouldKeepFocusOverride(T context, DependencyObject newFocusElement)
+#endif
+        => GetParent(newFocusElement).Contains(context);
+}
+public class AlwyasInFocusHandler : AlwyasInFocusHandler<RichTextEditor> { }
 public class AlwyasInFocusHandler<T> : FocusHandler<T> where T : UIElement
 {
+#if WINDOWS_UWP
     protected override bool ShouldKeepFocusOverride(T context, Point positionRelativeToWindow, DependencyObject newFocusElement)
         => true;
+#else
+    protected override bool ShouldKeepFocusOverride(T context, DependencyObject newFocusElement)
+        => true;
+#endif
 }

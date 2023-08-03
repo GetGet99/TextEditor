@@ -1,7 +1,6 @@
 using Get.RichTextKit.Editor;
 using Get.XAMLTools;
-using Windows.UI.Xaml.Controls;
-namespace Get.TextEditor.UWP.UI.Controls;
+namespace Get.TextEditor.Shared.UI.Controls;
 [DependencyProperty<StyleStatus>("StyleStatus", CheckForChanges = true, GenerateLocalOnPropertyChangedMethod = true)]
 public sealed partial class ToggleMenuFlyoutItemEx : ToggleMenuFlyoutItem
 {
@@ -10,7 +9,7 @@ public sealed partial class ToggleMenuFlyoutItemEx : ToggleMenuFlyoutItem
         InitializeComponent();
     }
 
-    private void ToggleButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private void ToggleButton_Click(object sender, RoutedEventArgs e)
     {
         StyleStatus = StyleStatus.Toggle();
     }

@@ -3,16 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Get.TextEditor"
-    Background="Transparent"
     IsTabStop="True"
     ManipulationMode="TranslateY,TranslateInertia"
+    AllowFocusOnInteraction="True"
 >
     <UserControl.Resources>
         <DataTemplate x:Name="EmptyTemplate">
             <Grid IsHitTestVisible="False"/>
         </DataTemplate>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="12"/>
             <ColumnDefinition/>

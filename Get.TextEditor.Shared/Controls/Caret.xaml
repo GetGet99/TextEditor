@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:toolkit="using:CommunityToolkit.Platform.UI"
     mc:Ignorable="d"
     Translation="{x:Bind MainTranslation(CaretRect), Mode=OneWay}"
     Visibility="Collapsed"
@@ -36,7 +36,7 @@
             ManipulationCompleted="HandleManipulationCompleted"
             PointerPressed="CancelPointerEvent" PointerMoved="CancelPointerEvent"
             PointerReleased="CancelPointerEvent2"
-            toolkit:FrameworkElementExtensions.Cursor="SizeAll"
+            x:Name="HandleElement"
         >
             <!---->
             <!--PointerEntered="GridPoitnerEnter" PointerExited="GridPoitnerLeave"-->

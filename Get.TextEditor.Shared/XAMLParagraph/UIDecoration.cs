@@ -11,7 +11,7 @@ using System.Xml.Linq;
 using static Get.RichTextKit.Editor.Paragraphs.Paragraph;
 using VerticalAlignment = Get.RichTextKit.Editor.Paragraphs.Properties.Decoration.VerticalAlignment;
 
-namespace Get.TextEditor.UWP.Decoration;
+namespace Get.TextEditor.Shared.Decoration;
 
 public class UIDecoration : IParagraphDecoration
 {

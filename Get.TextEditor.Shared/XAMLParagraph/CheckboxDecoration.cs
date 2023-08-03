@@ -1,7 +1,7 @@
 ﻿using Get.RichTextKit.Editor.Paragraphs.Properties.Decoration;
 
 
-namespace Get.TextEditor.UWP.Decoration;
+namespace Get.TextEditor.Shared.Decoration;
 using UIVerticalAlignment = Platform.UI.Xaml.VerticalAlignment;
 
 public class CheckboxDecoration : UIDecoration

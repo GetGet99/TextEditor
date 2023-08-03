@@ -1,7 +1,6 @@
 ﻿using SkiaSharp;
 using Get.RichTextKit;
 
-using SkiaSharp.Views.UWP;
 using Style = Get.RichTextKit.Style;
 using Get.RichTextKit.Utils;
 using System.Numerics;

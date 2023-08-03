@@ -66,8 +66,13 @@ partial class RichTextEditor : UserControl
             //var selection = DocumentView.Selection.Range;
             //args.Request.LayoutBoundsVisualPixels.ControlBounds = TransformToVisual(null).TransformBounds(new(0, 0, ActualWidth, ActualHeight));
             //args.Request.LayoutBoundsVisualPixels.TextBounds = TextDocument.boun;
+#if WINDOWS_UWP
+#else
+            //args.Request.LayoutBounds.ControlBounds = TransformToVisual(null).TransformBounds(new(0, 0, ActualWidth, ActualHeight));
+            //args.Request.LayoutBounds.TextBounds = TransformToVisual(null).TransformBounds(new(0, 0, ActualWidth, ActualHeight));
+#endif
         };
-        GotFocus += delegate
+        GotFocus += (o, e) =>
         {
             HasFocus = true;
             //Focus(Platform.UI.Xaml.FocusState.Pointer);
@@ -89,12 +94,21 @@ partial class RichTextEditor : UserControl
         {
             HasFocus = false;
         };
-        //PointerPressed += delegate
-        //{
-        //    HasFocus = true;
-        //    Focus(Platform.UI.Xaml.FocusState.Pointer);
-        //    EditContext.NotifyFocusEnter();
-        //};
+        PointerPressed += (o, e) =>
+        {
+            HasFocus = true;
+            Focus(FocusState.Pointer);
+            EditContext.NotifyFocusEnter();
+            e.Handled = true;
+        };
+#if WINDOWS_UWP
+#else
+        CharacterReceived += (o, e) =>
+        {
+            DocumentView.Controller.Type(e.Character.ToString());
+            e.Handled = true;
+        };
+#endif
     }
 }
 static partial class Extension

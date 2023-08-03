@@ -16,7 +16,7 @@ partial class RichTextEditor : UserControl
     internal RichTextEditorUICanvas UnsafeGetUICanvas() => UICanvas;
     void InitXAML()
     {
-        FocusHandler = new InteractingOnlyFocusHandler();
+        FocusHandler = new InteractingContextOnlyFocusHandler();
         InitializeComponent();
         ManipulationDelta += (o, e) =>
         {
@@ -32,7 +32,11 @@ partial class RichTextEditor : UserControl
         {
             if (e.OldFocusedElement == this)
             {
+#if WINDOWS_UWP
                 if (FocusHandler.ShouldKeepFocus(this, CoreWindow.GetForCurrentThread().PointerPosition, e.NewFocusedElement))
+#else
+                if (FocusHandler.ShouldKeepFocus(this, e.NewFocusedElement))
+#endif
                 {
                     if (e.TryCancel())
                     {
@@ -94,16 +98,17 @@ partial class RichTextEditor : UserControl
     //}
     void InsertUIElement(IUIElementFactory uIElementFactory)
     {
-        var factory = new FactoryWrapper(uIElementFactory, (view, ele) =>
-        {
-            if (view == this)
-            {
-                ele.PointerEntered += (_, e) =>
-                {
-                    IsCursorInside = false;
-                };
-            }
-        });
+        //var factory = new FactoryWrapper(uIElementFactory, (view, ele) =>
+        //{
+        //    if (view == this)
+        //    {
+        //        ele.PointerEntered += (_, e) =>
+        //        {
+        //            IsCursorInside = false;
+        //        };
+        //    }
+        //});
+        var factory = uIElementFactory;
         DocumentView.Controller.InsertNewParagraph(new UIElementParagraph(DocumentView.Selection.CurrentCaretStyle, factory, this));
     }
     // XAML Helper

@@ -1,8 +1,8 @@
 ﻿<Application
-    x:Class="TryRichText.UWP.App"
+    x:Class="TryRichText.Shared.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:TryRichText.UWP"
+    xmlns:local="using:TryRichText.Shared"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls">
     <Application.Resources>
         <controls:XamlControlsResources>

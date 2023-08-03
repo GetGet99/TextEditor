@@ -1,4 +1,4 @@
-﻿namespace TryRichText.UWP;
+﻿namespace TryRichText.Shared;
 
 internal interface ICustomFormatProviderStyle
 {

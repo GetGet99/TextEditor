@@ -120,21 +120,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ICustomFormatProviderStyle.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="GlobalUsing.UWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SymbolEx.cs" />
-    <Compile Include="ToggleMenuFlyoutItemEx.xaml.cs">
-      <DependentUpon>ToggleMenuFlyoutItemEx.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ToggleButtonEx.xaml.cs">
-      <DependentUpon>ToggleButtonEx.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UIParagraphSettingTemplate.xaml.cs">
-      <DependentUpon>UIParagraphSettingTemplate.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -156,22 +143,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ToggleMenuFlyoutItemEx.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ToggleButtonEx.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UIParagraphSettingTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Get.EasyCSharp.Generator">
@@ -200,6 +171,7 @@
       <Name>Get.RichTextKit</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\Get.TextEditor.Test.Shared\Get.TextEditor.Test.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

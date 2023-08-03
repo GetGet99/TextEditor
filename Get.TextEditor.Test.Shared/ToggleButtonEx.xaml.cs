@@ -1,8 +1,7 @@
 using Get.RichTextKit.Editor;
 using Get.XAMLTools;
 using System;
-using Windows.UI.Xaml.Controls.Primitives;
-namespace Get.TextEditor.UWP.UI.Controls;
+namespace Get.TextEditor.Shared.UI.Controls;
 [DependencyProperty<StyleStatus>("StyleStatus", CheckForChanges = true, GenerateLocalOnPropertyChangedMethod = true)]
 public sealed partial class ToggleButtonEx : ToggleButton
 {
@@ -11,7 +10,7 @@ public sealed partial class ToggleButtonEx : ToggleButton
         InitializeComponent();
     }
 
-    private void ToggleButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private void ToggleButton_Click(object sender, RoutedEventArgs e)
     {
         StyleStatus = StyleStatus.Toggle();
     }

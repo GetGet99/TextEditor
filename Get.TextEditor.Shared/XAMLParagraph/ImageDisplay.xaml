@@ -9,5 +9,5 @@
     Padding="5"
     Background="Transparent"
 >
-    <Image Width="{x:Bind Multiply(ImageWidth, ImageScale), Mode=OneWay}" Height="{x:Bind Multiply(ImageHeight, ImageScale), Mode=OneWay}"/>
+    <Image Width="{x:Bind Multiply(ImageWidth, ImageScale), Mode=OneWay}" Height="{x:Bind Multiply(ImageHeight, ImageScale), Mode=OneWay}" Source="{x:Bind ImageSource, Mode=OneWay}"/>
 </Grid>
