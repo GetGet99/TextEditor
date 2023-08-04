@@ -32,10 +32,10 @@ namespace Get.TextEditor
     {
         public static bool IsKeyDown(Windows.System.VirtualKey key)
             => Keyboard.IsKeyDown((WinWrapper.Input.VirtualKey)key);
-        void A()
-        {
-            
-        }
+        public static void SetCursor(FrameworkElement element, PlatformCursorType value)
+            => typeof(UIElement).GetProperty("ProtectedCursor",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+        !.SetValue(element, InputSystemCursor.Create(value));
     }
 }
 namespace CommunityToolkit.Platform.UI

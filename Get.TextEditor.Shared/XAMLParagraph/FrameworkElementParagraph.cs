@@ -269,7 +269,7 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
         }
         return element;
     }
-    public override bool ShouldDeletAll(DeleteInfo deleteInfo)
+    public override bool ShouldDeleteAll(DeleteInfo deleteInfo)
     {
         if (deleteInfo.Range.Start <= StartCaretPosition.CodePointIndex && deleteInfo.Range.End >= EndCaretPosition.CodePointIndex)
             return true;
@@ -319,5 +319,10 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
             return NavigationStatus.MoveBefore;
         }
         else throw new System.ArgumentOutOfRangeException();
+    }
+    protected override (InsertTextStatus Status, StyledText RemainingText) AddText(int codePointIndex, StyledText text, UndoManager<Document, DocumentViewUpdateInfo> UndoManager)
+    {
+        if (codePointIndex == 0) return (InsertTextStatus.AddBefore, text);
+        return (InsertTextStatus.AddAfter, text);
     }
 }

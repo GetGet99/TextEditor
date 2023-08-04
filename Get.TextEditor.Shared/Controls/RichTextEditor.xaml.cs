@@ -27,7 +27,7 @@ partial class RichTextEditor : UserControl
             }
         };
         UIConfigParagraphTemplateSelector = new EmptySeleector(EmptyTemplate);
-
+        PlatformLibrary.SetCursor(ParagraphSettingUIContentPresenter, PlatformCursorType.Arrow);
         void FocusManager_GettingFocus(object sender, GettingFocusEventArgs e)
         {
             if (e.OldFocusedElement == this)

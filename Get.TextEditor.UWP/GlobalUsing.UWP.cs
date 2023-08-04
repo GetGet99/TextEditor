@@ -31,6 +31,9 @@ namespace Get.TextEditor
     {
         public static bool IsKeyDown(VirtualKey key)
             => (CoreWindow.GetForCurrentThread().GetKeyState(key) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+
+        public static void SetCursor(FrameworkElement element, PlatformCursorType value)
+            => FrameworkElementExtensions.SetCursor(element, value);
     }
 }
 namespace CommunityToolkit.Platform.UI

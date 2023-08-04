@@ -5,6 +5,7 @@ using Get.RichTextKit.Editor.DocumentView;
 using Get.EasyCSharp;
 
 using SkiaSharp;
+using Windows.Graphics.Display;
 
 namespace Get.TextEditor;
 [DependencyProperty<DocumentView>("DocumentView", GenerateLocalOnPropertyChangedMethod = true)]
@@ -33,8 +34,9 @@ sealed partial class RichTextEditorCanvas : PlatformSKSwapChainPanel
         {
             DocumentView.OwnerDocument.Layout.PageWidth = e.Info.Width;
             e.Surface.Canvas.Clear();
-            DocumentView.Paint(e.Surface.Canvas, ActualTheme is ElementTheme.Dark ? SKColors.White : SKColors.Black
-            );
+            e.Surface.Canvas.Save();
+            e.Surface.Canvas.Scale((float)DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
+            DocumentView.Paint(e.Surface.Canvas, ActualTheme is ElementTheme.Dark ? SKColors.White : SKColors.Black);
         };
         ActualThemeChanged += (_, _) => Invalidate();
         ManipulationDelta += (o, e) =>

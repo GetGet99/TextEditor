@@ -4,12 +4,6 @@ using System.Numerics;
 using Get.RichTextKit.Editor.DocumentView;
 using System.ComponentModel;
 using Get.EasyCSharp;
-
-using System;
-
-
-using Windows.UI.Core;
-
 namespace Get.TextEditor;
 [DependencyProperty<DocumentView>("DocumentView", GenerateLocalOnPropertyChangedMethod = true)]
 [DependencyProperty<bool>("SelectionHandle", GenerateLocalOnPropertyChangedMethod = true, LocalOnPropertyChangedMethodWithParameter = false, LocalOnPropertyChangedMethodName = nameof(Update))]
@@ -24,13 +18,7 @@ public sealed partial class Caret : INotifyPropertyChanged
             scrollTimer.Stop();
             TranslationTransition = TranslateTransitionCache;
         };
-#if WINDOWS_UWP
-        FrameworkElementExtensions.SetCursor(HandleElement, PlatformCursorType.SizeAll);
-#else
-        typeof(UIElement).GetProperty(nameof(ProtectedCursor),
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-        !.SetValue(HandleElement, InputSystemCursor.Create(PlatformCursorType.SizeAll));
-#endif
+        PlatformLibrary.SetCursor(HandleElement, PlatformCursorType.SizeAll);
     }
     //CoreCursor? oldCursor;
     //void GridPoitnerEnter(object sender, Platform.UI.Xaml.Input.PointerRoutedEventArgs e)

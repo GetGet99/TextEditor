@@ -44,13 +44,14 @@ partial class RichTextEditor : UserControl
         {
 
         };
+        bool isInComposition = false;
         EditContext.CompositionStarted += (sender, args) =>
         {
-
+            isInComposition = true;
         };
         EditContext.CompositionCompleted += (sender, args) =>
         {
-
+            isInComposition = false;
         };
         EditContext.TextRequested += (sender, args) =>
         {
@@ -63,8 +64,9 @@ partial class RichTextEditor : UserControl
         };
         EditContext.LayoutRequested += (sender, args) =>
         {
-            //var selection = DocumentView.Selection.Range;
             //args.Request.LayoutBoundsVisualPixels.ControlBounds = TransformToVisual(null).TransformBounds(new(0, 0, ActualWidth, ActualHeight));
+            //var selection = DocumentView.Selection.Range;
+            //
             //args.Request.LayoutBoundsVisualPixels.TextBounds = TextDocument.boun;
 #if WINDOWS_UWP
 #else
@@ -84,11 +86,12 @@ partial class RichTextEditor : UserControl
         };
         DocumentView.OwnerDocument.TextChanged += (modifiedRange) =>
         {
-            EditContext.NotifyTextChanged(
-                modifiedRange.ToCore(),
-                newLength: DocumentView.OwnerDocument.Layout.Length,
-                DocumentView.Selection.Range.ToCore()
-            );
+            if (!isInComposition)
+                EditContext.NotifyTextChanged(
+                    modifiedRange.ToCore(),
+                    newLength: DocumentView.OwnerDocument.Layout.Length,
+                    DocumentView.Selection.Range.ToCore()
+                );
         };
         EditContext.FocusRemoved += (sender, args) =>
         {

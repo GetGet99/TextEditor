@@ -13,17 +13,10 @@ using RTKTextAlignment = RichTextKit.TextAlignment;
 partial class RichTextEditor
 {
     public AllowedFormatting AllowedShortcutFormatting { get; set; } = new(defaultValue: true);
-#if WINDOWS_UWP
-    private void HandleShortcut(CoreWindow sender, KeyEventArgs e)
-    {
-        VirtualKey VirtualKeyOf(KeyEventArgs e)
-            => e.VirtualKey;
-#else
     private void HandleShortcut(object sender, KeyRoutedEventArgs e)
     {
         VirtualKey VirtualKeyOf(KeyRoutedEventArgs e)
             => e.Key;
-#endif
         if (!HasFocus) return;
         bool handled = true;
         switch (VirtualKeyOf(e))

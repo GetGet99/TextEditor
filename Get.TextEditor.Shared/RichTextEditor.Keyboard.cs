@@ -8,26 +8,15 @@ partial class RichTextEditor : UserControl
 {
     void InitKeyboardHook()
     {
-#if WINDOWS_UWP
-        CoreWindow.GetForCurrentThread().KeyDown += RichTextEditor_KeyDown;
-#else
         KeyDown += RichTextEditor_KeyDown;
-#endif
     }
 
     static bool IsKeyDown(VirtualKey key)
         => PlatformLibrary.IsKeyDown(key);
-#if WINDOWS_UWP
-    private void RichTextEditor_KeyDown(CoreWindow sender, KeyEventArgs e)
-    {
-        VirtualKey VirtualKeyOf(KeyEventArgs e)
-            => e.VirtualKey;
-#else
     private void RichTextEditor_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         VirtualKey VirtualKeyOf(KeyRoutedEventArgs e)
             => e.Key;
-#endif
         if (!HasFocus) return;
         else if ((DependencyObject)FocusManager.GetFocusedElement(XamlRoot) != this)
         {
