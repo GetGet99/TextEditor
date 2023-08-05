@@ -38,6 +38,8 @@ public sealed partial class UIParagraphSettingTemplate : Page
                     goto default;
                 case TableParagraph _:
                     return Parent.TableParagraph;
+                case CodeParagraph _:
+                    return Parent.CodeParagraph;
                 default:
                     return null;
             }
@@ -83,6 +85,14 @@ public sealed partial class UIParagraphSettingTemplate : Page
                 img
             );
         }
+    }
+    private async void AddCode(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn) return;
+        if (btn.Tag is not Paragraph para) return;
+        if (para.Owner is not { } document) return;
+        var style = para.StartStyle;
+        document.Paragraphs[para.GlobalParagraphIndex] = new CodeParagraph(new Get.RichTextKit.Style() { FontSize = 32, FontFamily = "Monocraft" });
     }
     IEnumerable<DependencyObject> GetParent(DependencyObject element)
     {

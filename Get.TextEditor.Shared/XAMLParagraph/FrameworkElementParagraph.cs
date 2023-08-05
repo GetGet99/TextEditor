@@ -276,11 +276,6 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
         return false;
     }
 
-    public override Paragraph Split(UndoManager<Document, DocumentViewUpdateInfo> UndoManager, int splitIndex)
-    {
-        throw new System.NotImplementedException();
-    }
-
     protected override void LayoutOverride(LayoutParentInfo owner)
     {
         FirstControl.Measure(new(owner.AvaliableWidth, double.PositiveInfinity));

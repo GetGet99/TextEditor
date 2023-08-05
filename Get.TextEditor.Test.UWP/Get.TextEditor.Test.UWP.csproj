@@ -162,6 +162,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Get.RichTextKit.Paragraphs\Get.RichTextKit.Editor.Paragraphs.csproj">
+      <Project>{9204803f-ae4a-4bb6-854d-dba5ef2fde3d}</Project>
+      <Name>Get.RichTextKit.Editor.Paragraphs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Get.TextEditor.UWP\Get.TextEditor.UWP.csproj">
       <Project>{af100e33-b321-48f8-a295-985176ccf5b2}</Project>
       <Name>Get.TextEditor.UWP</Name>

@@ -9,6 +9,7 @@
     xmlns:panelPara="using:Get.RichTextKit.Editor.Paragraphs.Panel"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:helper="using:Get.XAMLTools.UI.Helpers"
+    xmlns:colorcode="using:ColorCode"
     mc:Ignorable="d"
 >
     <Page.Resources>
@@ -40,6 +41,11 @@
                 </Border>
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Name="CodeParagraph" x:DataType="para:CodeParagraph">
+            <Grid>
+                <ComboBox Translation="{x:Bind local:XAMLHelper.Vector3(GlobalInfo, -50), Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{x:Bind colorcode:Languages.All}" SelectedItem="{x:Bind Language, Mode=TwoWay}"/>
+            </Grid>
+        </DataTemplate>
         <DataTemplate x:Name="EmptyTextParagraph" x:DataType="para:TextParagraph">
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" Translation="{x:Bind local:XAMLHelper.Vector3(GlobalInfo.ContentPosition), Mode=OneWay}" CornerRadius="8" Padding="5" Height="{x:Bind ContentHeight}">
                 <Border.Resources>
@@ -68,7 +74,7 @@
                         </Button.Flyout>
                     </Button>
                     <Button Content="{helper:SymbolExIcon Symbol=Pictures}" Click="AddImage" Tag="{x:Bind}" />
-                    <Button Content="{helper:SymbolExIcon SymbolEx=Code}"/>
+                    <Button Content="{helper:SymbolExIcon SymbolEx=Code}" Click="AddCode" Tag="{x:Bind}"/>
                     <Button Content="{helper:SymbolExIcon SymbolEx=Handwriting}"/>
                     <Button Content="{helper:SymbolExIcon Symbol=SlideShow}"/>
                 </StackPanel>
