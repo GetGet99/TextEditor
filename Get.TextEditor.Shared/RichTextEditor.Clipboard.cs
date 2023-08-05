@@ -3,6 +3,8 @@ using Get.RichTextKit.Editor.DocumentView;
 using Windows.ApplicationModel.DataTransfer;
 using System.Threading.Tasks;
 using Get.TextEditor.Data;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Get.TextEditor;
 partial class RichTextEditor : UserControl
@@ -57,7 +59,11 @@ partial class RichTextEditor : UserControl
         Text:
             if (clipboard.Contains(StandardDataFormats.Text))
             {
-                DocumentView.Controller.Type((await clipboard.GetTextAsync()).Replace('\n', Document.NewParagraphSeparator));
+                static string ReplaceNewLine(string text)
+                {
+                    return text.ReplaceLineEndings(Document.NewParagraphSeparator.ToString());
+                }
+                DocumentView.Controller.Type(ReplaceNewLine(await clipboard.GetTextAsync()));
                 return;
             }
         }
