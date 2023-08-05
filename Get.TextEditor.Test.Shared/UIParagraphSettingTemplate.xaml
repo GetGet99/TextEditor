@@ -17,7 +17,7 @@
             <Grid>
                 <TextBox Translation="{x:Bind local:XAMLHelper.Vector3(GlobalInfo, -50), Mode=OneWay}" IsEnabled="False" Text="Hi" HorizontalAlignment="Left" VerticalAlignment="Top">
                 </TextBox>
-                <Border HorizontalAlignment="Left" VerticalAlignment="Top" Translation="{x:Bind local:XAMLHelper.Vector3(GlobalInfo, ContentHeight), Mode=OneWay}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Background="#222222" Padding="5">
+                <!--<Border HorizontalAlignment="Left" VerticalAlignment="Top" Translation="{x:Bind local:XAMLHelper.Vector3(GlobalInfo, ContentHeight), Mode=OneWay}" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Background="#222222" Padding="5">
                     <StackPanel Orientation="Horizontal" Spacing="16">
                         <Button>
                             Insert Row Above
@@ -38,7 +38,7 @@
                             Delete Row
                         </Button>
                     </StackPanel>
-                </Border>
+                </Border>-->
             </Grid>
         </DataTemplate>
         <DataTemplate x:Name="CodeParagraph" x:DataType="para:CodeParagraph">
@@ -75,8 +75,8 @@
                     </Button>
                     <Button Content="{helper:SymbolExIcon Symbol=Pictures}" Click="AddImage" Tag="{x:Bind}" />
                     <Button Content="{helper:SymbolExIcon SymbolEx=Code}" Click="AddCode" Tag="{x:Bind}"/>
-                    <Button Content="{helper:SymbolExIcon SymbolEx=Handwriting}"/>
-                    <Button Content="{helper:SymbolExIcon Symbol=SlideShow}"/>
+                    <!--<Button Content="{helper:SymbolExIcon SymbolEx=Handwriting}"/>
+                    <Button Content="{helper:SymbolExIcon Symbol=SlideShow}"/>-->
                 </StackPanel>
             </Border>
         </DataTemplate>
