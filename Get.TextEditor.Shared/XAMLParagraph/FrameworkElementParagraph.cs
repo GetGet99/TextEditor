@@ -322,7 +322,18 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
     }
     protected override (InsertTextStatus Status, StyledText RemainingText) AddText(int codePointIndex, StyledText text, UndoManager<Document, DocumentViewUpdateInfo> UndoManager)
     {
-        if (codePointIndex == 0) return (InsertTextStatus.AddBefore, text);
-        return (InsertTextStatus.AddAfter, text);
+        if (codePointIndex == 0)
+        {
+            // Consume new line if one exists
+            if (text.CodePoints[^1] is Document.NewParagraphSeparator)
+                text = text.Extract(0, text.Length - 1);
+            return (InsertTextStatus.AddBefore, text);
+        } else
+        {
+            // Consume new line if one exists
+            if (text.CodePoints[0] is Document.NewParagraphSeparator)
+                text = text.Extract(1, text.Length - 1);
+            return (InsertTextStatus.AddAfter, text);
+        }
     }
 }

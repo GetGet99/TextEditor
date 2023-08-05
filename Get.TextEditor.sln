@@ -23,13 +23,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Get.TextEditor.Shared", "Ge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Get.RichTextKit", "RichTextKit\Get.RichTextKit\Get.RichTextKit.csproj", "{FE417701-A66F-431E-9076-6D50AA3D41AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get.TextEditor.WinUI", "Get.TextEditor.WinUI\Get.TextEditor.WinUI.csproj", "{391F02A4-DCD2-457D-808A-27C8E85B77FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Get.TextEditor.WinUI", "Get.TextEditor.WinUI\Get.TextEditor.WinUI.csproj", "{391F02A4-DCD2-457D-808A-27C8E85B77FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{5A2B5915-C399-4D6C-B169-3549D035B610}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Get.TextEditor.Test.Shared", "Get.TextEditor.Test.Shared\Get.TextEditor.Test.Shared.shproj", "{12F4A209-9E7F-431C-96A8-1BE4573CA53A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get.TextEditor.Test.WinUI", "Get.TextEditor.Test.WinUI\Get.TextEditor.Test.WinUI\Get.TextEditor.Test.WinUI.csproj", "{C88CC552-F289-4E8D-A4EB-8920DC3142E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Get.TextEditor.Test.WinUI", "Get.TextEditor.Test.WinUI\Get.TextEditor.Test.WinUI\Get.TextEditor.Test.WinUI.csproj", "{C88CC552-F289-4E8D-A4EB-8920DC3142E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
