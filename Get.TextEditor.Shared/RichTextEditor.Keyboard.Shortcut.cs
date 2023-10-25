@@ -111,9 +111,24 @@ partial class RichTextEditor
                         };
                         DocumentView.RequestRedraw();
                     }
+                    async void TestRTF()
+                    {
+                        var tb = new TextBox() { PlaceholderText = "RTF Data" };
+                        ContentDialog ct = new()
+                        {
+                            XamlRoot = XamlRoot,
+                            Content = tb,
+                            Title = "Insert RTF",
+                            PrimaryButtonText = "Add"
+                        };
+                        await ct.ShowAsync();
+                        AddRTFData(tb.Text, AllowedShortcutFormatting, "Add RTF Data");
+                    }
+                    TestRTF();
                     //TestAlignment();
                     //TestUIElement();
-                    TestTable();
+                    //TestTable();
+
                 }
                 else goto default;
                 break;

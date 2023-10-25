@@ -171,7 +171,7 @@ public partial class CodeParagraph : Paragraph, ITextParagraph, IAlignableParagr
         // do nothing
         //TextBlock.ApplyStyle(position, length, style);
     }
-    public override CaretPosition EndCaretPosition => new(TextBlock.Length - 1, false);
+    public override CaretPosition UserEndCaretPosition => new(TextBlock.Length - 1, false);
 
     Colorizer colorizer = new(Theme.Dark);
     [AutoEventNotifyProperty(OnChanged = "OnLanguageChanged")]

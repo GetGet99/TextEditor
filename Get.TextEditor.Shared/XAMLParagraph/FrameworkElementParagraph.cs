@@ -132,20 +132,20 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
 
     public override bool CanDeletePartial(DeleteInfo deleteInfo, out TextRange requestedSelection)
     {
-        requestedSelection = new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+        requestedSelection = new(UserStartCaretPosition.CodePointIndex, UserEndCaretPosition.CodePointIndex, UserEndCaretPosition.AltPosition);
         return false;
     }
 
     public override bool DeletePartial(DeleteInfo deleteInfo, out TextRange requestedSelection, UndoManager<Document, DocumentViewUpdateInfo> UndoManager)
     {
-        requestedSelection = new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+        requestedSelection = new(UserStartCaretPosition.CodePointIndex, UserEndCaretPosition.CodePointIndex, UserEndCaretPosition.AltPosition);
         return false;
     }
 
     public override CaretInfo GetCaretInfo(CaretPosition position)
     {
         var xOffset = XAlignmentOffset;
-        if (position.CodePointIndex == StartCaretPosition.CodePointIndex)
+        if (position.CodePointIndex == UserStartCaretPosition.CodePointIndex)
         {
             return new()
             {
@@ -166,12 +166,12 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
         }
     }
 
-    public override LineInfo GetLineInfo(int line) => new(line, 0, ContentHeight, StartCaretPosition, EndCaretPosition, null, null);
+    public override LineInfo GetLineInfo(int line) => new(line, 0, ContentHeight, UserStartCaretPosition, UserEndCaretPosition, null, null);
 
     public override TextRange GetSelectionRange(CaretPosition position, ParagraphSelectionKind kind)
     {
         if (kind is not ParagraphSelectionKind.None)
-            return new(StartCaretPosition.CodePointIndex, EndCaretPosition.CodePointIndex, EndCaretPosition.AltPosition);
+            return new(UserStartCaretPosition.CodePointIndex, UserEndCaretPosition.CodePointIndex, UserEndCaretPosition.AltPosition);
         else
             return new(position);
     }
@@ -271,7 +271,7 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
     }
     public override bool ShouldDeleteAll(DeleteInfo deleteInfo)
     {
-        if (deleteInfo.Range.Start <= StartCaretPosition.CodePointIndex && deleteInfo.Range.End >= EndCaretPosition.CodePointIndex)
+        if (deleteInfo.Range.Start <= UserStartCaretPosition.CodePointIndex && deleteInfo.Range.End >= UserEndCaretPosition.CodePointIndex)
             return true;
         return false;
     }
@@ -291,9 +291,9 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
         ghostXCoord = null;
         if (direction is NavigationDirection.Forward)
         {
-            if (selection.End < EndCaretPosition.CodePointIndex)
+            if (selection.End < UserEndCaretPosition.CodePointIndex)
             {
-                selection.EndCaretPosition = EndCaretPosition;
+                selection.EndCaretPosition = UserEndCaretPosition;
                 if (!keepSelection) selection.Start = selection.End;
                 newSelection = selection;
                 return NavigationStatus.Success;
@@ -303,9 +303,9 @@ public partial class UIElementParagraph : Paragraph, IAlignableParagraph
         }
         else if (direction is NavigationDirection.Backward)
         {
-            if (selection.Start > StartCaretPosition.CodePointIndex)
+            if (selection.Start > UserStartCaretPosition.CodePointIndex)
             {
-                selection.EndCaretPosition = StartCaretPosition;
+                selection.EndCaretPosition = UserStartCaretPosition;
                 if (!keepSelection) selection.Start = selection.End;
                 newSelection = selection;
                 return NavigationStatus.Success;

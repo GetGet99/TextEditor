@@ -165,8 +165,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Get.RichTextKit.Data\Get.RichTextKit.Data.csproj">
+      <Project>{b95f9ecf-a540-4075-a1af-b2aa206ad622}</Project>
+      <Name>Get.RichTextKit.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Get.TextEditor.RTF\Get.TextEditor.RTF.csproj">
-      <Project>{3eb7f8f6-fc24-45ff-840a-902a812f2b79}</Project>
+      <Project>{1d20e235-cdee-4aba-8efa-77898a3b8575}</Project>
       <Name>Get.TextEditor.RTF</Name>
     </ProjectReference>
     <ProjectReference Include="..\RichTextKit\Get.RichTextKit\Get.RichTextKit.csproj">

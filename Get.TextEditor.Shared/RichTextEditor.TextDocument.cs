@@ -1,4 +1,5 @@
 
+using Get.RichTextKit;
 using Get.RichTextKit.Editor.DocumentView;
 using Get.RichTextKit.Styles;
 
@@ -11,6 +12,7 @@ partial class RichTextEditor : UserControl
         FontFamily = "Segoe UI",
         FontSize = 32
     };
+    public static IStyle GetDefaultStyle() => new CopyStyle(DefaultStyle);
     public readonly DocumentView DocumentView;
     void InitTextDocument()
     {

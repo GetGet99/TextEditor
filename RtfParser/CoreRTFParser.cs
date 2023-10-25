@@ -227,7 +227,7 @@ public class CoreRTFParser
                                 else if (uc1 && command is not "u")
                                 {
                                     uc1 = false;
-                                    goto EndCommand;
+                                    //goto EndCommand;
                                 }
                                 var group = Groups.Peek();
 

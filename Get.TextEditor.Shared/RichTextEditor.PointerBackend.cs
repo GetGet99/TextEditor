@@ -2,6 +2,12 @@ namespace Get.TextEditor;
 
 partial class RichTextEditor : UserControl
 {
+    public void ProgrammaticFocus()
+    {
+        HasFocus = true;
+        Focus(FocusState.Programmatic);
+        EditContext.NotifyFocusEnter();
+    }
     void InitPointerBackendHook()
     {
         int clickCount = 0;

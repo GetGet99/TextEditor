@@ -171,5 +171,5 @@ public partial class SameFormatTextParagraph : Paragraph, ITextParagraph, IAlign
     void ITextParagraph.OnTextBlockChanged() { }
     void ITextParagraph.EnsureReadyToModify() { }
 
-    public override CaretPosition EndCaretPosition => new(TextBlock.Length - 1, false);
+    public override CaretPosition UserEndCaretPosition => new(TextBlock.Length - 1, false);
 }

@@ -1,6 +1,10 @@
-﻿using Get.RichTextKit.Editor;
+﻿using Get.RichTextKit;
+using Get.RichTextKit.Editor;
 using Get.RichTextKit.Editor.DataStructure.Table;
 using Get.RichTextKit.Editor.DocumentView;
+using Get.RichTextKit.Editor.Paragraphs.Panel;
+using Get.RichTextKit.Editor.Structs;
+using Get.RichTextKit.Editor.UndoUnits;
 using RtfParser;
 using System.Drawing;
 
@@ -13,13 +17,16 @@ public class RTFDocumentHandler : IRTFParserHandler
     internal ColorTableParser ColorTable = new();
     internal StylesheetParser StylesheetParser = new();
     DocumentView DocumentView;
+    public TextRange GetHandlerSelectionRange() => DocumentView.Selection.Range;
     public RTFDocumentHandler(DocumentView document, AllowedFormatting importFormatting)
     {
-        DocumentView = document;
+        DocumentView = new DocumentView(document.OwnerView, document.OwnerDocument);
+        DocumentView.Selection.Range = document.Selection.Range;
         ImportFormatting = importFormatting;
     }
     public void AddText(ReadOnlyMemory<int> text)
     {
+        CleanUp();
         DocumentView.Controller.Type(text.Span);
     }
 
@@ -30,6 +37,7 @@ public class RTFDocumentHandler : IRTFParserHandler
 
     public void ExecuteCommand(ref RTFCommandContext commandContext, int? param, RTFGroup? context)
     {
+        var strCmd = commandContext.TextCommand.ToString();
         void ApplyStyle<T>(bool allow, Action<T> Setter, T value, T valueRevert)
         {
 
@@ -77,7 +85,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 {
                     if (FontTable.TryGetValue(DefaultFontIndex.Value, out var font))
                         ApplyComplexStyle(
-                            ImportFormatting.AllowFontFamilyChange,
+                            ImportFormatting.FontFamily,
                             () => DocumentView.Selection.FontFamily,
                             x => DocumentView.Selection.FontFamily = x,
                             font
@@ -127,7 +135,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontFamilyChange,
+                    ImportFormatting.FontFamily,
                     () => DocumentView.Selection.FontFamily,
                     x => DocumentView.Selection.FontFamily = x,
                     FontTable[param.Value]
@@ -137,7 +145,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontSizeChange,
+                    ImportFormatting.FontSize,
                     () => DocumentView.Selection.FontSize,
                     x => DocumentView.Selection.FontSize = x,
                     (float)param.Value / 2
@@ -147,7 +155,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontColorChange,
+                    ImportFormatting.TextColor,
                     delegate
                     {
                         var color = DocumentView.Selection.TextColor.Value;
@@ -161,7 +169,7 @@ public class RTFDocumentHandler : IRTFParserHandler
                 CleanUp();
                 if (param is null) goto default;
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontColorChange,
+                    ImportFormatting.TextColor,
                     delegate
                     {
                         var color = DocumentView.Selection.BackgroundColor!.Value;
@@ -195,20 +203,20 @@ public class RTFDocumentHandler : IRTFParserHandler
                 );
                 if (DefaultFontIndex is not null && FontTable.TryGetValue(DefaultFontIndex.Value, out var font))
                     ApplyComplexStyle(
-                        ImportFormatting.AllowFontFamilyChange,
+                        ImportFormatting.FontFamily,
                         () => DocumentView.Selection.FontFamily,
                         x => DocumentView.Selection.FontFamily = x,
                         font
                     );
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontSizeChange,
+                    ImportFormatting.FontSize,
                     () => DocumentView.Selection.FontSize,
                     x => DocumentView.Selection.FontSize = x,
                     12f
                 );
 
                 ApplyComplexStyle(
-                    ImportFormatting.AllowFontColorChange,
+                    ImportFormatting.TextColor,
                     delegate
                     {
                         var color = DocumentView.Selection.TextColor.Value;
@@ -235,19 +243,70 @@ public class RTFDocumentHandler : IRTFParserHandler
                 break;
             // scaps
             case "trowd":
+                // table
                 tableInfo = new();
                 break;
             case "cellx":
+                // cell width
                 if (tableInfo.HasValue && param.HasValue)
                 {
                     // Add new cell
                     tableInfo.Value.Columns.Add(new(param.Value, TableLengthMode.Ratio));
                 }
                 break;
+            case "cell": // Moves to the next cell
+                //DocumentView.Controller.MoveCaret(Direction.Right);
+                //{
+                //    DocumentView.OwnerDocument.Layout.EnsureValid();
+                //    var table = (TableParagraph)DocumentView.Selection.CurrentlyInteractingParagraph.First(x => x is TableParagraph);
+                //    var currentIdx = TableParagraph.TableIndex.FromCaretPosition(table, table.GlobalInfo.OffsetToThis(DocumentView.Selection.Range.EndCaretPosition));
+                //    var nextIdx = TableParagraph.TableIndex.FromActualIndex(table, currentIdx.ActualIndex + 1);
+                //    if (nextIdx.Row >= table.Rows.Count)
+                //    {
+                //        // Move outside the table. nextIdx is not a valid index
+                //        DocumentView.Controller.MoveCaret(table.EndCaretPosition);
+                //        DocumentView.Controller.MoveCaret(Direction.Right);
+                //    }
+                //    else
+                //    {
+                //        // Move to the next cell
+                //        var nextPara = table[nextIdx.Row, nextIdx.Column];
+                //        DocumentView.Controller.MoveCaret(nextPara.GlobalInfo.OffsetFromThis(nextPara.StartCaretPosition));
+                //    }
+                //}
+                {
+                    DocumentView.OwnerDocument.Layout.EnsureValid();
+                    // Make sure we are in the table
+                    if (DocumentView.Selection.CurrentlyInteractingParagraph.Any(x => x is TableParagraph))
+                    {
+                        var beforePara = DocumentView.Selection.CurrentlyInteractingParagraph.First();
+                        var style = DocumentView.Selection.CurrentCaretStyle;
+                        var range = DocumentView.OwnerDocument[new(
+                            beforePara.GlobalInfo.OffsetFromThis(beforePara.UserEndCaretPosition).CodePointIndex,
+                            beforePara.GlobalInfo.OffsetFromThis(new CaretPosition(beforePara.CodePointLength,true)).CodePointIndex
+                        )];
+                        range.ApplyStyle(_ => style);
+                        DocumentView.Controller.MoveCaret(Direction.Right);
+                        DocumentView.Selection.ApplyStyle(_ => style);
+                    }
+
+                }
+                break;
+            case "trgaph":
+                // Table Row Gap Half aka Cell padding
+                goto default;
             case "clvertalt":
+                // top vertical alignment
+                goto default;
             case "clvertalc":
+                // center vertical alignment
+                goto default;
             case "clvertalb":
+                // bottom vertical alignment
+                goto default;
             case "row":
+                // End table
+                goto default;
             default:
                 if (commandContext.ShouldBeGroupCommand) commandContext.CommandGroupHandler = EmptyRTFParserHandler.Instance;
                 break;
@@ -257,7 +316,58 @@ public class RTFDocumentHandler : IRTFParserHandler
     {
         if (tableInfo.HasValue)
         {
-            
+            var tableInfo = this.tableInfo.Value;
+            var currPara = DocumentView.Selection.CurrentlyInteractingParagraph.First();
+            var currParaIdx = currPara.GlobalParagraphIndex;
+            if (currParaIdx.RecursiveIndexArray[^1] > 0)
+            {
+                var prevParaIdx = new ParagraphIndex(currParaIdx.RecursiveIndexArray.Select(x => x).ToArray());
+                prevParaIdx.RecursiveIndexArray[^1]--;
+                if (DocumentView.OwnerDocument.Paragraphs[prevParaIdx] is TableParagraph table)
+                {
+                    if (table.Columns.Count != tableInfo.Columns.Count)
+                        goto CreateNewTable;
+                    foreach (var i in ..tableInfo.Columns.Count)
+                    {
+                        if (table.Columns[i].Width != tableInfo.Columns[i])
+                            goto CreateNewTable;
+                    }
+                    // The table is equivalent to the previous row
+                    // TODO: Replace with UndoUnits
+                    table.Rows.Add(
+                        (..tableInfo.Columns.Count)
+                        .Select(_ => TableParagraph.CreateInner(table.EndStyle))
+                        .ToArray(),
+                        TableLength.Auto
+                    );
+                    DocumentView.OwnerDocument.Layout.InvalidateAndValid();
+                    var cell = table.Rows[^1][0];
+                    DocumentView.Controller.MoveCaret(cell.GlobalInfo.OffsetFromThis(cell.UserStartCaretPosition));
+                    goto EndTableCreation;
+                }
+                else goto CreateNewTable;
+            }
+            else
+            {
+                goto CreateNewTable;
+            }
+        CreateNewTable:
+            var newtable = new TableParagraph(currPara.StartStyle, initialRows: 1, initialCols: tableInfo.Columns.Count);
+
+            foreach (var (i, width) in tableInfo.Columns.WithIndex())
+            {
+                var col = newtable.Columns[i];
+                col.Width = width;
+            }
+            DocumentView.OwnerDocument.UndoManager.Do(new UndoInsertParagraph(
+                (IParagraphCollection)DocumentView.OwnerDocument.Paragraphs[currParaIdx.Parent],
+                currParaIdx.IndexRelativeToParent,
+                newtable
+            ));
+            DocumentView.OwnerDocument.Layout.EnsureValid();
+            DocumentView.Controller.MoveCaret(newtable.GlobalInfo.OffsetFromThis(newtable.UserStartCaretPosition));
+        EndTableCreation:
+            this.tableInfo = null;
         }
     }
     TableInfo? tableInfo;

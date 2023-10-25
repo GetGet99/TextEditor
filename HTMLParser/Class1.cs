@@ -10,6 +10,6 @@ public class Class1
         string HTML = "";
         HtmlAgilityPack.HtmlDocument doc = new();
         doc.LoadHtml(HTML);
-        HttpUtility.HtmlDecode()
+        //HttpUtility.HtmlDecode()
     }
 }

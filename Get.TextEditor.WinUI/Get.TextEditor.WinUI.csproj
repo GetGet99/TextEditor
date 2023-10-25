@@ -35,6 +35,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Get.TextEditor.RTF\Get.TextEditor.RTF.csproj" />
 	  <ProjectReference Include="..\RichTextKit\Get.RichTextKit\Get.RichTextKit.csproj" />
+	  <ProjectReference Include="..\Get.RichTextKit.Data\Get.RichTextKit.Data.csproj" />
 	  <ProjectReference Include="..\RtfParser\RtfParser.csproj" />
 	</ItemGroup>
 
